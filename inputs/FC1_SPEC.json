@@ -1,0 +1,565 @@
+{
+  "study_id": "FC1",
+  "version": "1.0.0",
+  "title": "Fitted clock probabilities with partly informative neighbors",
+  "namespace": "FC1/1.0.0",
+  "base_seed": 2026110904,
+  "authoring_date": "2026-11-09",
+  "status": "Prepared for user review; no scientific execution during authoring",
+  "units": [
+    {
+      "id": "U000",
+      "unit_id": "U000",
+      "block": 0,
+      "rho": 0
+    },
+    {
+      "id": "U001",
+      "unit_id": "U001",
+      "block": 0,
+      "rho": 0.5
+    },
+    {
+      "id": "U002",
+      "unit_id": "U002",
+      "block": 0,
+      "rho": 1
+    },
+    {
+      "id": "U003",
+      "unit_id": "U003",
+      "block": 1,
+      "rho": 0
+    },
+    {
+      "id": "U004",
+      "unit_id": "U004",
+      "block": 1,
+      "rho": 0.5
+    },
+    {
+      "id": "U005",
+      "unit_id": "U005",
+      "block": 1,
+      "rho": 1
+    },
+    {
+      "id": "U006",
+      "unit_id": "U006",
+      "block": 2,
+      "rho": 0
+    },
+    {
+      "id": "U007",
+      "unit_id": "U007",
+      "block": 2,
+      "rho": 0.5
+    },
+    {
+      "id": "U008",
+      "unit_id": "U008",
+      "block": 2,
+      "rho": 1
+    },
+    {
+      "id": "U009",
+      "unit_id": "U009",
+      "block": 3,
+      "rho": 0
+    },
+    {
+      "id": "U010",
+      "unit_id": "U010",
+      "block": 3,
+      "rho": 0.5
+    },
+    {
+      "id": "U011",
+      "unit_id": "U011",
+      "block": 3,
+      "rho": 1
+    },
+    {
+      "id": "U012",
+      "unit_id": "U012",
+      "block": 4,
+      "rho": 0
+    },
+    {
+      "id": "U013",
+      "unit_id": "U013",
+      "block": 4,
+      "rho": 0.5
+    },
+    {
+      "id": "U014",
+      "unit_id": "U014",
+      "block": 4,
+      "rho": 1
+    },
+    {
+      "id": "U015",
+      "unit_id": "U015",
+      "block": 5,
+      "rho": 0
+    },
+    {
+      "id": "U016",
+      "unit_id": "U016",
+      "block": 5,
+      "rho": 0.5
+    },
+    {
+      "id": "U017",
+      "unit_id": "U017",
+      "block": 5,
+      "rho": 1
+    },
+    {
+      "id": "U018",
+      "unit_id": "U018",
+      "block": 6,
+      "rho": 0
+    },
+    {
+      "id": "U019",
+      "unit_id": "U019",
+      "block": 6,
+      "rho": 0.5
+    },
+    {
+      "id": "U020",
+      "unit_id": "U020",
+      "block": 6,
+      "rho": 1
+    },
+    {
+      "id": "U021",
+      "unit_id": "U021",
+      "block": 7,
+      "rho": 0
+    },
+    {
+      "id": "U022",
+      "unit_id": "U022",
+      "block": 7,
+      "rho": 0.5
+    },
+    {
+      "id": "U023",
+      "unit_id": "U023",
+      "block": 7,
+      "rho": 1
+    },
+    {
+      "id": "U024",
+      "unit_id": "U024",
+      "block": 8,
+      "rho": 0
+    },
+    {
+      "id": "U025",
+      "unit_id": "U025",
+      "block": 8,
+      "rho": 0.5
+    },
+    {
+      "id": "U026",
+      "unit_id": "U026",
+      "block": 8,
+      "rho": 1
+    },
+    {
+      "id": "U027",
+      "unit_id": "U027",
+      "block": 9,
+      "rho": 0
+    },
+    {
+      "id": "U028",
+      "unit_id": "U028",
+      "block": 9,
+      "rho": 0.5
+    },
+    {
+      "id": "U029",
+      "unit_id": "U029",
+      "block": 9,
+      "rho": 1
+    },
+    {
+      "id": "U030",
+      "unit_id": "U030",
+      "block": 10,
+      "rho": 0
+    },
+    {
+      "id": "U031",
+      "unit_id": "U031",
+      "block": 10,
+      "rho": 0.5
+    },
+    {
+      "id": "U032",
+      "unit_id": "U032",
+      "block": 10,
+      "rho": 1
+    },
+    {
+      "id": "U033",
+      "unit_id": "U033",
+      "block": 11,
+      "rho": 0
+    },
+    {
+      "id": "U034",
+      "unit_id": "U034",
+      "block": 11,
+      "rho": 0.5
+    },
+    {
+      "id": "U035",
+      "unit_id": "U035",
+      "block": 11,
+      "rho": 1
+    },
+    {
+      "id": "U036",
+      "unit_id": "U036",
+      "block": 12,
+      "rho": 0
+    },
+    {
+      "id": "U037",
+      "unit_id": "U037",
+      "block": 12,
+      "rho": 0.5
+    },
+    {
+      "id": "U038",
+      "unit_id": "U038",
+      "block": 12,
+      "rho": 1
+    },
+    {
+      "id": "U039",
+      "unit_id": "U039",
+      "block": 13,
+      "rho": 0
+    },
+    {
+      "id": "U040",
+      "unit_id": "U040",
+      "block": 13,
+      "rho": 0.5
+    },
+    {
+      "id": "U041",
+      "unit_id": "U041",
+      "block": 13,
+      "rho": 1
+    },
+    {
+      "id": "U042",
+      "unit_id": "U042",
+      "block": 14,
+      "rho": 0
+    },
+    {
+      "id": "U043",
+      "unit_id": "U043",
+      "block": 14,
+      "rho": 0.5
+    },
+    {
+      "id": "U044",
+      "unit_id": "U044",
+      "block": 14,
+      "rho": 1
+    },
+    {
+      "id": "U045",
+      "unit_id": "U045",
+      "block": 15,
+      "rho": 0
+    },
+    {
+      "id": "U046",
+      "unit_id": "U046",
+      "block": 15,
+      "rho": 0.5
+    },
+    {
+      "id": "U047",
+      "unit_id": "U047",
+      "block": 15,
+      "rho": 1
+    }
+  ],
+  "calibration_sizes": [
+    1920,
+    7680
+  ],
+  "evaluation_size": 4096,
+  "monitored_times": [
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "cutoff": 95,
+  "horizons": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "generator": {
+    "period_two_probability": 0.5,
+    "own_weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "own_rates": [
+      0.875,
+      0.1875,
+      0.875
+    ],
+    "neighbor_rate": 0.75,
+    "phase": "uniform conditional on period",
+    "alternating_low_rate": 0,
+    "independent_neighbor_same_clock_by_chance": true
+  },
+  "parameter_order": [
+    "p2",
+    "wH",
+    "wL",
+    "rH",
+    "rL",
+    "rS",
+    "rN",
+    "rho"
+  ],
+  "inference": {
+    "period_support": [
+      2,
+      4
+    ],
+    "clocks": [
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        4,
+        0
+      ],
+      [
+        4,
+        1
+      ],
+      [
+        4,
+        2
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "phase_prior": "uniform",
+    "family_known": true,
+    "individual_law_unknown": true,
+    "uniform_parity_prior": 0.5,
+    "target": "underlying event",
+    "hard_choice": "marginal period MAP; tie period 2; retain conditional phase posterior",
+    "mean_field_approximation": false
+  },
+  "optimizer": {
+    "starts": [
+      [
+        0.5,
+        0.34,
+        0.33,
+        0.8,
+        0.3,
+        0.7,
+        0.7,
+        0.5
+      ],
+      [
+        0.25,
+        0.2,
+        0.5,
+        0.65,
+        0.15,
+        0.9,
+        0.5,
+        0.2
+      ],
+      [
+        0.75,
+        0.5,
+        0.2,
+        0.95,
+        0.4,
+        0.6,
+        0.9,
+        0.8
+      ],
+      [
+        0.5,
+        0.15,
+        0.15,
+        0.7,
+        0.2,
+        0.5,
+        0.4,
+        0.1
+      ],
+      [
+        0.35,
+        0.65,
+        0.2,
+        0.9,
+        0.1,
+        0.8,
+        0.85,
+        0.9
+      ],
+      [
+        0.65,
+        0.2,
+        0.65,
+        0.6,
+        0.35,
+        0.95,
+        0.6,
+        0.6
+      ]
+    ],
+    "em_maxiter": 300,
+    "em_parameter_tolerance": 1e-9,
+    "em_nll_tolerance": 1e-12,
+    "em_monotonic_tolerance": 1e-10,
+    "slsqp_maxiter": 500,
+    "continuation_maxiter": 1000,
+    "ftol": 1e-12,
+    "stationarity_tolerance": 0.000001,
+    "rate_bounds": [
+      0.01,
+      0.99
+    ],
+    "period_mass_bounds": [
+      0.01,
+      0.99
+    ],
+    "component_mass_floor": 0.01,
+    "sharing_bounds": [
+      0,
+      1
+    ],
+    "ordered_iid_rates": true,
+    "selection": "lowest finite feasible calibration mean NLL, regardless of qualification; no test-label selection",
+    "unqualified_policy": "retain and flag selected fit; no silent fallback; compare all feasible candidates",
+    "qualification": "infinity norm of theta minus Euclidean projection(theta minus mean-NLL-gradient) at unit step",
+    "zero_responsibility": "retain previous coordinate where the expected sufficient-statistic denominator is zero",
+    "boundary_starts": false
+  },
+  "analysis": {
+    "primary": {
+      "rho": 0.5,
+      "calibration_size": 7680,
+      "contrast": "context_soft minus context_hard",
+      "metric": "Brier",
+      "horizons": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "direction": "negative favors retaining period uncertainty"
+    },
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 2026110942,
+    "bootstrap_unit": "independent calibration-and-evaluation block",
+    "near_equal_mean_nll": 1e-8,
+    "near_best_total_nll": 1,
+    "period_entropy_threshold_bits": 0.5,
+    "log_loss_clip": 1e-8,
+    "formal_scientific_pass_fail": false,
+    "all_selected_fits_retained": true,
+    "secondary_contrasts": [
+      "context_soft-own_soft",
+      "own_soft-own_hard",
+      "context_hard-own_hard"
+    ],
+    "strata": [
+      "own count 0",
+      "own count 1",
+      "own count 2",
+      "own count >=3",
+      "context entropy <=0.5 bits",
+      "context entropy >0.5 bits",
+      "true period and marginal-MAP period"
+    ],
+    "forecast_symmetry": "four-step periodicity imposed by clock support, not learned extrapolation",
+    "oracle_use": "evaluation-only supplied-parameter references; no fitting/selection"
+  },
+  "workflow": {
+    "cpu_only": true,
+    "root": "/content/drive/MyDrive/comp 400",
+    "package_folder": "FITTED_CLOCK_NEIGHBOR_NOTEBOOKS",
+    "remote_folder": "FITTED_CLOCK_NEIGHBOR_DEV_V1",
+    "stages": [
+      "freeze",
+      "cal-data",
+      "fit",
+      "evaluate",
+      "analyze",
+      "export"
+    ],
+    "all_fits_before_evaluation": true,
+    "scientific_switches_default": false,
+    "recovery_no_refit": true
+  },
+  "environment": {
+    "policy": "Record CPU numerical stack at freeze; require same Python major/minor and NumPy/SciPy versions for scientific resume; export-only recovery does not require old numerical environment",
+    "minimum_python": "3.10",
+    "requires": [
+      "numpy",
+      "scipy"
+    ],
+    "gpu_required": false,
+    "automatic_install": false
+  },
+  "scope": {
+    "neural_training": false,
+    "checkpoint_replay": false,
+    "graph_learning_claim": false,
+    "model_support_misspecification": false,
+    "new_identifiability_certificate": false,
+    "author_executed_scientific_study": false
+  }
+}

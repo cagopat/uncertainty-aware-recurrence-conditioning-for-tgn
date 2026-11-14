@@ -1,0 +1,7 @@
+# Recorded scientific stack. CUDA GPU required for neural stages.
+# No silent CPU or version fallback; see docs/REPRODUCIBILITY.md.
+--extra-index-url https://download.pytorch.org/whl/cu130
+numpy==2.4.6
+pandas==2.2.3
+scipy==1.16.3
+torch==2.14.1+cu130

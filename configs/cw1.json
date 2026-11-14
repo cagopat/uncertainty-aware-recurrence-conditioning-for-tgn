@@ -1,0 +1,395 @@
+{
+  "study": "CW1",
+  "version": "1.0.0",
+  "namespace": "CW1/1.0.0",
+  "base_seed": 2026111201,
+  "blocks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "arms": [
+    "hard_fixed",
+    "equal_fixed",
+    "soft_fixed",
+    "period4_fixed"
+  ],
+  "source_study": "EM1",
+  "source_calibration_size": 7680,
+  "source_unit_mapping": "U{3*block+1:03d}",
+  "source_population": "partly_informative_neighbor",
+  "source_parameter_policy": "R05 exactly retained pinned FC1 fits via EM1; fresh F00/F05/F10 independently refit on unlabeled N7680 histories by frozen rules",
+  "monitored_times": [
+    80,
+    81,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95
+  ],
+  "cutoff": 95,
+  "training_horizons": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "evaluation_horizons": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "primary_horizons": [
+    5,
+    6,
+    7,
+    8
+  ],
+  "generator": {
+    "period_two_probability": 0.5,
+    "own_weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "own_rates": [
+      0.875,
+      0.1875,
+      0.875
+    ],
+    "neighbor_rate": 0.75,
+    "sharing_probability": 0.5,
+    "phase_given_period": "uniform",
+    "alternating_parity": "fair_hidden_opportunity_index_parity",
+    "independent_neighbor_can_match_by_chance": true,
+    "false_positive_records": false
+  },
+  "train_pairs": 2048,
+  "evaluation_pairs": 4096,
+  "validation_pairs": 0,
+  "epochs": 16,
+  "batch_size": 64,
+  "updates_per_epoch": 32,
+  "total_updates_per_fit": 512,
+  "total_target_presentations_per_fit": 131072,
+  "expected_fit_count": 256,
+  "expected_neural_evaluation_rows": 8388608,
+  "learning_rate": 0.001,
+  "optimizer": "Adam",
+  "optimizer_betas": [
+    0.9,
+    0.999
+  ],
+  "optimizer_epsilon": 1e-8,
+  "weight_decay": 0,
+  "gradient_clip_norm": 1,
+  "dropout": 0,
+  "loss": "unweighted_binary_cross_entropy_with_logits",
+  "checkpoint_selection": "final_epoch_16_only",
+  "model_initialization": "paired_within_block_no_arm_in_seed",
+  "batch_order": "paired_within_block_epoch_no_arm_in_seed",
+  "memory_dim": 32,
+  "time_dim": 16,
+  "edge_dim": 4,
+  "attention_layers": 1,
+  "attention_heads": 2,
+  "neighbors": 32,
+  "expected_trainable_parameters": 50434,
+  "source_model_arm": "native",
+  "query_representation": "fixed_norm_MAP_equal_fitted_or_always_P4_period_channels",
+  "period_probability_source": "context_period_marginals from retainedR05 or condition-specific fresh calibration; never true individual clock",
+  "hard_period_rule": "marginal_MAP_tie_to_period_two",
+  "memory_message_transform_changed": false,
+  "decoder_raw_horizon": false,
+  "decoder_hidden_shared_indicator": false,
+  "decoder_visible_indicator": true,
+  "decoder_engineered_recurrence_features": "zero",
+  "edge_features_scaled": false,
+  "zero_own_record_policy": "retain_and_use_fitted_posterior",
+  "empty_attention_policy": "zero_empty_attention",
+  "score_dtype": "float32_neural_logits_float64_probabilities_and_metrics",
+  "primary_contrast": "soft_fixed_minus_equal_fixed",
+  "mandatory_reference_contrast": "each_neural_arm_minus_fitted_context_soft",
+  "baseline_methods": [
+    "own_hard",
+    "own_soft",
+    "context_hard",
+    "context_soft",
+    "known_context_soft"
+  ],
+  "primary_metric": "Brier",
+  "secondary_metrics": [
+    "Brier_by_horizon",
+    "log_loss",
+    "within_horizon_AUC",
+    "h_plus_four_probability_difference",
+    "excess_Brier_to_fitted_context_soft"
+  ],
+  "log_loss_clip": 1e-7,
+  "entropy_cutoff_bits": 0.5,
+  "bootstrap_replicates": 10000,
+  "bootstrap_seed": 2026111202,
+  "bootstrap_unit": "paired_block_within_condition; jointly_resample_fresh_blocks_for_rho_interactions",
+  "scientific_pass_fail_rule": null,
+  "cycle_probability_absolute_tolerance": 0.00001,
+  "environment": {
+    "python_major_minor": "3.13",
+    "numpy": "2.4.6",
+    "pandas": "2.2.3",
+    "torch": "2.14.1+cu130",
+    "cuda": "13.0",
+    "allowed_devices": [
+      "NVIDIA A100-SXM4-40GB",
+      "NVIDIA L4",
+      "Tesla T4"
+    ],
+    "device_policy": "Choose one before freeze; exact GPU model and software identity bound for every scientific unit and resume",
+    "automatic_installation": false,
+    "cpu_export_requires_scientific_environment": false,
+    "scipy": "1.16.3"
+  },
+  "scientific_execution_default": false,
+  "source_import_is_read_only": true,
+  "all_training_complete_before_test_generation": "within_declared_group",
+  "new_cohort_not_reuse_FC1_test_or_training_graphs": true,
+  "new_population_parameter_fitting": "fresh_group_only",
+  "replay_old_neural_checkpoints": false,
+  "phase_bank_radius": "fixed_2_all_valid_slots",
+  "arm_definitions": {
+    "hard_fixed": {
+      "weights": "one_hot_MAP_tie_to_P2"
+    },
+    "equal_fixed": {
+      "weights": "[1/sqrt(2),1/sqrt(2)]"
+    },
+    "soft_fixed": {
+      "weights": "m/sqrt(sum(m^2))"
+    },
+    "period4_fixed": {
+      "weights": "[0,1]"
+    }
+  },
+  "interval_policy": "Pointwise 95% paired-block percentile bootstrap; primary contrast designated; auxiliary contrasts/strata exploratory without multiplicity-adjusted discovery claims",
+  "reference_population_parameters": "R05 reuses sixteen pinned FC1 fits; F00/F05/F10 estimate 48 fresh population models",
+  "primary_estimand": "soft_fixed minus equal_fixed h5-h8 Brier on fresh paired neural cohorts at fixed pre-fusion norm2",
+  "absence_of_test_selection": "All64 retained or all192 fresh final-epoch16 checkpoints sealed before generating that group's test cohorts; no test-based checkpoint/arm/seed selection",
+  "budget_totals": {
+    "calibration_pairs": 368640,
+    "training_motifs": 131072,
+    "test_motifs": 262144,
+    "fits": 256,
+    "epoch_receipts": 4096,
+    "updates": 131072,
+    "target_presentations": 33554432,
+    "forecast_rows_per_method": 2097152,
+    "neural_forecast_rows": 8388608,
+    "methods_including_baselines": 9,
+    "all_forecast_entries": 18874368
+  },
+  "title": "Value of fitted clock weights and sharing-condition replication",
+  "authoring_date": "2026-11-12",
+  "conditions": [
+    {
+      "id": "R05",
+      "group": "retained",
+      "rho": 0.5,
+      "parameter_source": "retained_EM1_selected_FC1"
+    },
+    {
+      "id": "F00",
+      "group": "fresh",
+      "rho": 0,
+      "parameter_source": "new_unlabeled_calibration"
+    },
+    {
+      "id": "F05",
+      "group": "fresh",
+      "rho": 0.5,
+      "parameter_source": "new_unlabeled_calibration"
+    },
+    {
+      "id": "F10",
+      "group": "fresh",
+      "rho": 1,
+      "parameter_source": "new_unlabeled_calibration"
+    }
+  ],
+  "groups": [
+    "retained",
+    "fresh"
+  ],
+  "calibration_pairs": 7680,
+  "calibration_fit": {
+    "starts": [
+      [
+        0.5,
+        0.34,
+        0.33,
+        0.8,
+        0.3,
+        0.7,
+        0.7,
+        0.5
+      ],
+      [
+        0.25,
+        0.2,
+        0.5,
+        0.65,
+        0.15,
+        0.9,
+        0.5,
+        0.2
+      ],
+      [
+        0.75,
+        0.5,
+        0.2,
+        0.95,
+        0.4,
+        0.6,
+        0.9,
+        0.8
+      ],
+      [
+        0.5,
+        0.15,
+        0.15,
+        0.7,
+        0.2,
+        0.5,
+        0.4,
+        0.1
+      ],
+      [
+        0.35,
+        0.65,
+        0.2,
+        0.9,
+        0.1,
+        0.8,
+        0.85,
+        0.9
+      ],
+      [
+        0.65,
+        0.2,
+        0.65,
+        0.6,
+        0.35,
+        0.95,
+        0.6,
+        0.6
+      ]
+    ],
+    "em_maxiter": 300,
+    "em_parameter_tolerance": 1e-9,
+    "em_nll_tolerance": 1e-12,
+    "em_monotonic_tolerance": 1e-10,
+    "slsqp_maxiter": 500,
+    "continuation_maxiter": 1000,
+    "ftol": 1e-12,
+    "stationarity_tolerance": 0.000001,
+    "rate_bounds": [
+      0.01,
+      0.99
+    ],
+    "period_mass_bounds": [
+      0.01,
+      0.99
+    ],
+    "component_mass_floor": 0.01,
+    "sharing_bounds": [
+      0,
+      1
+    ],
+    "ordered_iid_rates": true,
+    "selection": "lowest finite feasible calibration mean NLL, regardless of qualification; no test-label selection",
+    "unqualified_policy": "retain and flag selected fit; no silent fallback; compare all feasible candidates",
+    "qualification": "infinity norm of theta minus Euclidean projection(theta minus mean-NLL-gradient) at unit step",
+    "zero_responsibility": "retain previous coordinate where the expected sufficient-statistic denominator is zero",
+    "boundary_starts": false
+  },
+  "expected_calibration_fit_count": 48,
+  "expected_cohort_count": 64,
+  "total_epochs": 4096,
+  "replication_primary_contrast": "F05_soft_fixed_minus_equal_fixed",
+  "retained_parameter_lineage": "FC1 selected partly informative N7680 fits authenticated through EM1",
+  "expected_training_groups": {
+    "retained": 64,
+    "fresh": 192
+  },
+  "disagreement": {
+    "formula": "m2*m4*(p2(q)-p4(q))^2",
+    "zero_mass_policy": "D=0; zero-mass conditional component stored as0 and flagged",
+    "bins": [
+      0,
+      0.01,
+      0.05,
+      0.25
+    ],
+    "bin_labels": [
+      "zero",
+      "positive_to_0.01",
+      "over_0.01_to_0.05",
+      "over_0.05"
+    ],
+    "bins_reason": "fixed interpretable descriptive strata before saved audit; not optimized for neural differences",
+    "historical_audit_scope": "exploratory_EM1_saved_rows_only",
+    "future_hypothesis": "report soft-minus-equal versus disagreement; no guaranteed monotonicity or scientific gate"
+  },
+  "sharing_design": "fresh_group_refit_per_rho; common_random_numbers_within_fresh_block_across_rho; not frozen_estimator_shift",
+  "fresh_qualification_policy": "Select lowest finite feasible calibration mean NLL including unqualified endpoints; retain diagnostics and do not drop blocks",
+  "sharing_parameter_supplied": false,
+  "continuation_gate": "explicit budget/review approval after retained analysis, no outcome-dependent automatic selection",
+  "equivalence_margin": null,
+  "weight_reassignment_included": false,
+  "weight_reassignment_reason": "not in core four-arm study; no strong assignment-specific or calibration claim",
+  "minimum_local_free_gib": 32,
+  "recommended_drive_free_gib": 40,
+  "source_default": "/content/drive/MyDrive/comp 400/ENCODING_MAGNITUDE_DEV_V1",
+  "remote_default": "/content/drive/MyDrive/comp 400/CLOCK_WEIGHT_VALUE_DEV_V1",
+  "prespecified_contrasts": [
+    "soft_fixed_minus_equal_fixed",
+    "equal_fixed_minus_hard_fixed",
+    "soft_fixed_minus_hard_fixed",
+    "period4_fixed_minus_hard_fixed",
+    "soft_fixed_minus_period4_fixed",
+    "equal_fixed_minus_period4_fixed"
+  ],
+  "budget_estimate": {
+    "recorded_comparator": "EM1:64fits summed train-worker10858.12seconds on L4, no calibration",
+    "retained_training_hours_rough": 3.02,
+    "all_training_hours_rough": 12.07,
+    "excludes": "48CPUcalibrations,sourceaudit,evaluation,checkpointIO,exports,interruptions",
+    "is_guarantee": false
+  }
+}

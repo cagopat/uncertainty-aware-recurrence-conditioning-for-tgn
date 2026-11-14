@@ -1,0 +1,2 @@
+# CPU-only handwritten software checks. Not a scientific execution lockfile.
+numpy==2.3.5
