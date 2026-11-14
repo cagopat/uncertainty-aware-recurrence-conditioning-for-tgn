@@ -8,9 +8,9 @@ When observed history leaves more than one recurring clock plausible, does assig
 
 ## Population and observation law
 
-Every independent motif has nodes a,b,c, a candidate edge a→b and a visible neighbor b→c. Candidate periods are 2 or 4, each with probability .5, and phase is uniform within period. The six clock probabilities are therefore (.25,.25,.125,.125,.125,.125).
+Every independent motif has nodes $a,b,c$, a candidate edge $a\to b$ and a visible neighbor $b\to c$. Candidate periods are 2 or 4, each with probability .5, and phase is uniform within period. The six clock probabilities are therefore $(.25,.25,.125,.125,.125,.125)$.
 
-The neighbor shares the candidate's exact period and phase with probability rho. Otherwise it draws an independent clock and may still match by chance. The clock-weight comparison uses rho=0,.5,1, with fresh calibration in each condition and common random numbers across conditions within block; the threshold determining shared versus independent changes. This controls the amount of useful neighboring evidence while retaining pairing. The generating rho is not supplied to fitted inference.
+The neighbor shares the candidate's exact period and phase with probability $\rho$. Otherwise it draws an independent clock and may still match by chance. The clock-weight comparison uses $\rho\in\{0,0.5,1\}$, with fresh calibration in each condition and common random numbers across conditions within block; the threshold determining shared versus independent changes. This controls the amount of useful neighboring evidence while retaining pairing. The generating $\rho$ is not supplied to fitted inference.
 
 Candidate recording mechanisms are equally frequent: independent retention .875, independent retention .1875, or alternating opportunity eligibility with hidden fair parity and retention .875. Neighbor retention is .75. There are no false-positive records. All sixteen integer timestamps 80–95 are monitored. Recorded absences at otherwise possible opportunities contribute likelihood information. Future labels are underlying deterministic clock events, not whether those events would be recorded.
 
@@ -18,7 +18,7 @@ The finite period family, recording-mechanism family and uniform conditional pha
 
 ## Calibration and information access
 
-Each fresh condition/block fits eight population coordinates from 7,680 unlabeled candidate–neighbor history pairs. Six fixed starts use bounded EM, SLSQP refinement and one declared bounded continuation. Selection is the lowest finite feasible calibration mean negative log likelihood, not best downstream prediction. An unqualified selected endpoint is retained and flagged, not replaced by a worse objective endpoint. The projected-gradient threshold is 1e-6; it is first-order numerical qualification, not proof of global optimum.
+Each fresh condition/block fits eight population coordinates from 7,680 unlabeled candidate–neighbor history pairs. Six fixed starts use bounded EM, SLSQP refinement and one declared bounded continuation. Selection is the lowest finite feasible calibration mean negative log likelihood, not best downstream prediction. An unqualified selected endpoint is retained and flagged, not replaced by a worse objective endpoint. The projected-gradient threshold is $10^{-6}$; it is first-order numerical qualification, not proof of global optimum.
 
 There are 16 blocks per condition. The weight-reassignment study retains all sixteen selected fits from the half-shared-neighbor condition, with no favorable subset. Neural training and test histories are separate from the calibration sample. The direct fitted probability baseline uses the full posterior over period and phase; TGN's query-time representation uses its two period marginals together with observed event histories.
 
@@ -26,25 +26,34 @@ No true per-motif period, hidden recording law, parity or sharing indicator is p
 
 ## TGN representation
 
-For an event time t and query q, let d=q−t and
+For an event time $t$ and query time $q$, let $d=q-t$. The phase features for candidate period $P$ are
 
-\[
-u_P(d)=[\cos(2\pi(d\bmod P)/P),\sin(2\pi(d\bmod P)/P)].
-\]
+```math
+u_P(d)=\left[\cos\!\left(\frac{2\pi(d\bmod P)}{P}\right),\sin\!\left(\frac{2\pi(d\bmod P)}{P}\right)\right].
+```
 
-The query bank is four repetitions of `[w2*u2(d), w4*u4(d)]`. Weight vectors have norm one, so valid 16-coordinate banks have norm two:
+The query bank is four repetitions of the same weighted phase vector:
+
+```math
+\begin{aligned}
+b(d)&=[w_2u_2(d),\;w_4u_4(d)],\\
+z(d)&=[b(d),\;b(d),\;b(d),\;b(d)]\in\mathbb{R}^{16}.
+\end{aligned}
+```
+
+Let $m_2$ and $m_4$ denote the fitted posterior period probabilities. The weights satisfy $w_2^2+w_4^2=1$, so valid event slots have $\lVert z(d)\rVert_2=2$ **before learned fusion**. Padded event slots are zero.
 
 | Arm | Weights |
 |---|---|
-| Hard | One-hot marginal-MAP period; tie to P2 |
-| Equal | (1/sqrt(2),1/sqrt(2)) |
-| Fitted soft | (m2,m4)/sqrt(m2²+m4²) |
-| Fixed P4 | (0,1) |
+| Hard | One-hot marginal-MAP period; ties select $P=2$ |
+| Equal | $(w_2,w_4)=\left(\frac{1}{\sqrt{2}},\frac{1}{\sqrt{2}}\right)$ |
+| Fitted soft | $(w_2,w_4)=\frac{(m_2,m_4)}{\sqrt{m_2^2+m_4^2}}$ |
+| Fixed period four | $(w_2,w_4)=(0,1)$ |
 | Support-preserving reassigned | Another eligible history's normalized marginals, evaluated on the recipient's own event lags |
 
-The query bank is concatenated with cutoff-age features at T−t and passed through the same learned fusion. It replaces the time-feature route entering attention keys and values, not the event features. Historical message time encoding is unchanged. The three-node functional TGN uses memory width 32, time width 16, edge width 4, one attention layer, two heads and at most 32 neighbors; every arm has 50,434 trainable parameters.
+The query bank is concatenated with cutoff-age features at $T-t$ and passed through the same learned fusion. The input-norm control does not constrain the norm after that learned fusion. It replaces the time-feature route entering attention keys and values, not the event features. Historical message time encoding is unchanged. The three-node functional TGN uses memory width 32, time width 16, edge width 4, one attention layer, two heads and at most 32 neighbors; every arm has 50,434 trainable parameters.
 
-Raw h/8 and obsolete engineered recurrence cues are neutralized in these studies. With periods 2 and 4, changing q by 4 leaves the relevant query representation unchanged. Prediction equality is checked; accuracy remains the substantive outcome. This explicit symmetry must not be called learned recurrence extrapolation.
+Raw $h/8$ and obsolete engineered recurrence cues are neutralized in these studies. With periods 2 and 4, changing $q$ by 4 leaves the relevant query representation unchanged. Prediction equality is checked; accuracy remains the substantive outcome. This explicit symmetry must not be called learned recurrence extrapolation.
 
 ## Reassigned-weight control
 
@@ -64,6 +73,6 @@ The clock-weight comparison includes all three sharing conditions. A one-conditi
 
 Every evaluation retains neural arms, own-history hard/soft direct forecasts, context hard/soft direct forecasts and a known-law context reference. The primary contrast is fitted-soft minus equal in the clock-weight comparison, and fitted-soft minus support-preserving reassignment in the weight-reassignment study. The direct fitted-soft forecast is a mandatory comparator, including when it beats every TGN arm.
 
-Brier is computed without clipping. Log loss alone clips at 1e-7. AUC is within horizon with half credit for exact ties; undefined single-class results remain missing. Motifs are averaged within horizon, horizons equally, then blocks equally. Paired pointwise 95% intervals resample all 16 blocks 10,000 times, preserving comparisons within each sampled block. Horizons, motifs and model arms are not independent fitted-model repetitions. There is no equivalence margin, multiplicity-adjusted discovery claim or scientific pass/fail threshold.
+Brier is computed without clipping. Log loss alone clips at $10^{-7}$. AUC is within horizon with half credit for exact ties; undefined single-class results remain missing. Motifs are averaged within horizon, horizons equally, then blocks equally. Paired pointwise 95% intervals resample all 16 blocks 10,000 times, preserving comparisons within each sampled block. Horizons, motifs and model arms are not independent fitted-model repetitions. There is no equivalence margin, multiplicity-adjusted discovery claim or scientific pass/fail threshold.
 
 Report all blocks, horizons and declared contrasts; preserve conditional-support and uncertainty subgroups with counts. Do not use true-clock diagnostic subgroups as deployable routers. No outcome-dependent extra epochs, new seeds or discarded blocks are allowed within the recorded design.
