@@ -86,4 +86,4 @@ The public wrapper has software tests, but no new scientific experiment is run d
 
 ## License and attribution
 
-Project-authored contributions are MIT licensed. Inherited components retain their original notices; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This is a modified TGL/DyGLib-derived TGN host, not released KEAT-TGN and not an official TGB leaderboard implementation.
+Project-authored contributions are MIT licensed. Inherited components retain their original notices; see [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). This is a modified TGL/DyGLib-derived TGN host.
