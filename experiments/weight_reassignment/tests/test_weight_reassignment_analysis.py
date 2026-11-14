@@ -7,10 +7,10 @@ from unittest import mock
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from sw1_analysis import (posterior_disagreement,disagreement_strata,metrics,auc,
+from weight_reassignment_analysis import (posterior_disagreement,disagreement_strata,metrics,auc,
     grouped_metrics,contrast_definitions,block_summary,aggregate,METHODS,
     assignment_diagnostics, conditional_block_bootstrap, support_diagnostics, PRIMARY)
-from sw1_data import labels_for_clock
+from weight_reassignment_data import labels_for_clock
 
 
 def handmade():
@@ -133,8 +133,8 @@ class AnalysisTests(unittest.TestCase):
 
     def test_analysis_saved_fixture_layout(self):
         """Handwritten two-row arrays only; no generated cohorts or fitting."""
-        from sw1_analysis import analyze
-        from sw1_io import read_json, write_json, sha
+        from weight_reassignment_analysis import analyze
+        from weight_reassignment_io import read_json, write_json, sha
         data,p=handmade()
         data['pair_index']=np.array([0,1],dtype=np.int64)
         original=p['fitted_period_probability']
@@ -170,8 +170,8 @@ class AnalysisTests(unittest.TestCase):
                     write_json(destination/'REPORT.json',report)
             # Selection and seed regeneration belong to their separate tests;
             # here mocks prevent source lookup and any study seed draw.
-            with mock.patch('sw1_data.selected_fit',return_value=(None,selected,'b'*64)), \
-                 mock.patch('sw1_data.verify_assignment',return_value=True) as verification:
+            with mock.patch('weight_reassignment_data.selected_fit',return_value=(None,selected,'b'*64)), \
+                 mock.patch('weight_reassignment_data.verify_assignment',return_value=True) as verification:
                 analyze(root,root/'analysis',spec,cohorts=['SW05_B00','SW05_B01'])
             self.assertEqual(verification.call_count,4)
             summary=read_json(root/'analysis/SUMMARY.json')
@@ -183,7 +183,7 @@ class AnalysisTests(unittest.TestCase):
             self.assertTrue((root/'analysis/SW05_B00_SUPPORT_DIAGNOSTICS.npz').is_file())
 
     def test_fitted_MAP_error_directions_are_separate(self):
-        from sw1_analysis import strata
+        from weight_reassignment_analysis import strata
         data,p=handmade()
         p['context_map_period']=np.array([4,2])
         groups=strata(data,p)

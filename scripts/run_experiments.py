@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Portable orchestration around the unchanged CW1/SW1 scientific workers.
+"""Run the clock-weight comparison and support-preserving weight reassignment.
 
 Help, plan and status use only the standard library. Scientific work requires
 --execute. This wrapper does not impersonate the original Colab run's identity.
@@ -24,7 +24,12 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 CONDITIONS = {"fresh": ("F00", "F05", "F10"), "shuffle": ("SW05",)}
-PREFIX = {"fresh": "cw1", "shuffle": "sw1"}
+PREFIX = {"fresh": "clock_weights", "shuffle": "weight_reassignment"}
+PUBLIC_NAMES = {"fresh": "clock-weights", "shuffle": "weight-reassignment"}
+STUDY_NAMES = {"fresh": "Clock-weight comparison",
+               "shuffle": "Support-preserving weight reassignment"}
+STUDY_ALIASES = {**{name: key for key, name in PUBLIC_NAMES.items()},
+                 "fresh": "fresh", "shuffle": "shuffle"}
 PHASES = ("plan", "status", "preflight", "calibrate", "assets", "train", "evaluate", "tables", "all", "unlock")
 
 
@@ -114,7 +119,7 @@ def source_inventory(study):
                  ROOT / "scripts/render_tables.py"):
         result[path.relative_to(ROOT).as_posix()] = digest(path)
     if study == "fresh":
-        result["inputs/FC1_SPEC.json"] = digest(ROOT / "inputs/FC1_SPEC.json")
+        result["inputs/clock_fitting_spec.json"] = digest(ROOT / "inputs/clock_fitting_spec.json")
     return result
 
 
@@ -238,8 +243,8 @@ def prepare_run(args, spec, neural):
         work.mkdir(parents=True, exist_ok=True)
         require(not (work / "IDENTITY.json").exists(), "Unrecognized partial setup; preserve it and use a new run directory")
         if args.study == "fresh":
-            copy_exact(ROOT / "inputs/FC1_SPEC.json", work / "source/FC1_SPEC.json")
-            require(read(work / "source/FC1_SPEC.json")["optimizer"] == spec["calibration_fit"], "FC1 optimizer mismatch")
+            copy_exact(ROOT / "inputs/clock_fitting_spec.json", work / "source/CLOCK_FITTING_SPEC.json")
+            require(read(work / "source/CLOCK_FITTING_SPEC.json")["optimizer"] == spec["calibration_fit"], "Clock-fitting optimizer mismatch")
         else:
             if args.calibration_run:
                 selected = {"source_study": "CW1", "source_condition": "F05", "calibration_size": 7680,
@@ -259,7 +264,7 @@ def prepare_run(args, spec, neural):
                         "portable_receipt_sha256": canonical_hash(receipt)}
                 atomic_json(work / "source/SELECTED_FITS.json", selected)
             else:
-                bundled = ROOT / "inputs/cw1_f05"
+                bundled = ROOT / "inputs/half_shared_clock_fits"
                 verify_selection(bundled)
                 for path in (bundled / "SELECTED_FITS.json", bundled / "provenance.json"):
                     copy_exact(path, work / "source" / path.name)
@@ -382,14 +387,15 @@ def worker(job):
 
 
 def plan(study, spec):
-    return {"study": study, "scientific_source": spec["study"], "conditions": list(CONDITIONS[study]),
+    return {"study": PUBLIC_NAMES[study], "study_name": STUDY_NAMES[study],
+            "original_protocol_id": spec["study"], "conditions": list(CONDITIONS[study]),
             "calibration_fits": len(units(study, "calibrate", spec)),
             "neural_fits": len(units(study, "train", spec)), "epochs_per_fit": spec["epochs"],
             "train_horizons": spec["training_horizons"], "evaluation_horizons": spec["evaluation_horizons"],
             "arms": spec["arms"], "training_pairs_per_cohort": spec["train_pairs"],
             "test_pairs_per_cohort": spec["evaluation_pairs"], "config": "configs/" + PREFIX[study] + ".json",
-            "execution": False, "fresh_scope_excludes_retained_R05_and_old_EM1_audit": study == "fresh",
-            "shuffle_source_default": "bundled sixteen original CW1 F05 fits" if study == "shuffle" else None,
+            "execution": False, "excludes_earlier_retained_calibration_and_magnitude_studies": study == "fresh",
+            "calibration_source_default": "sixteen original half-shared-neighbor clock fits" if study == "shuffle" else None,
             "warning": "h5-h8 repeats the supplied four-step symmetry, not learned extrapolation"}
 
 
@@ -400,18 +406,21 @@ def main(argv=None):
         worker(read(argv[1]))
         return
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("study", choices=tuple(PREFIX))
+    parser.add_argument("study", choices=tuple(STUDY_ALIASES),
+                        help="clock-weights or weight-reassignment; fresh/shuffle remain compatibility aliases")
     parser.add_argument("phase", choices=PHASES)
     parser.add_argument("--run-dir", type=Path, help="New or resumed output folder; defaults to runs/STUDY")
     parser.add_argument("--execute", action="store_true", help="Explicitly enable requested scientific/fixture stages")
     parser.add_argument("--unit", help="One declared unit; never reduces the all-fit-before-test barrier")
-    parser.add_argument("--calibration-run", type=Path, help="Shuffle only: use all sixteen F05 fits from a new fresh run")
+    parser.add_argument("--calibration-run", type=Path,
+                        help="Weight reassignment only: use all sixteen half-shared-neighbor fits from a clock-weight run")
     parser.add_argument("--allow-environment-differences", action="store_true",
                         help="Record a portability run; never silently claim the original software/hardware")
     parser.add_argument("--retry-failed", action="store_true", help="Preserve prior attempts and explicitly retry inspected failures")
     parser.add_argument("--old-runtime-stopped", action="store_true", help="Required only to preserve and release a stale lock")
     args = parser.parse_args(argv)
-    args.run_dir = (args.run_dir or ROOT / "runs" / args.study).expanduser().resolve()
+    args.study = STUDY_ALIASES[args.study]
+    args.run_dir = (args.run_dir or ROOT / "runs" / PUBLIC_NAMES[args.study]).expanduser().resolve()
     if args.calibration_run:
         args.calibration_run = args.calibration_run.expanduser().resolve()
         require(args.study == "shuffle", "--calibration-run applies only to shuffle")

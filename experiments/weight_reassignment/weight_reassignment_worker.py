@@ -1,4 +1,4 @@
-"""CW1 explicitly authorized Colab scientific stages.
+"""SW1 explicitly authorized Colab scientific stages.
 
 Importing this file does not generate data, construct a model, fit parameters,
 or load a checkpoint. The author must not invoke these stage functions.
@@ -14,12 +14,12 @@ import uuid
 
 import numpy as np
 
-from cw1_io import (canonical_hash, copy_exact, read_json, require, restore_unit,
+from weight_reassignment_io import (canonical_hash, copy_exact, read_json, require, restore_unit,
                     seal_unit, sha, write_json)
-from cw1_data import (block_number, budget, fitted_inputs, generate, labels_for_clock,
+from weight_reassignment_data import (assignment, verify_assignment, block_number, budget, fitted_inputs, generate, labels_for_clock,
                       load_npz, model_seed, schedule, schedule_hash, selected_fit,
                       split_fit, true_theta, validate_spec)
-from cw1_encoding import ARMS
+from weight_reassignment_encoding import ARMS, support_assignment_guard
 
 
 def checkpoint_identity(identity, fit, epoch):
@@ -30,22 +30,31 @@ def assets(work, output, unit, spec):
     block = block_number(unit)
     theta, selected, source_hash = selected_fit(work, unit)
     data = generate(spec, unit, 'train', spec['train_pairs'])
-    mass, _ = fitted_inputs(data['x'], data['y'], theta)
+    mass, fitted = fitted_inputs(data['x'], data['y'], theta)
+    # Mapping is fixed from a split-specific seed before accessing labels.
+    assigned, assignment_report = assignment(spec, unit, 'train', mass)
     output.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(output/'ASSIGNMENT.npz', **assigned)
+    write_json(output/'ASSIGNMENT_REPORT.json',
+               {**assignment_report, 'assignment_sha256': sha(output/'ASSIGNMENT.npz')})
     np.savez_compressed(output/'DATA.npz', x=data['x'], y=data['y'],
                         labels=labels_for_clock(data['clock_index'], spec['training_horizons']),
                         fitted_period_probability=mass,
+                        fitted_clock_posterior=fitted['posterior_context'],
                         pair_index=data['pair_index'])
     write_json(output/'REPORT.json', {'stage': 'assets', 'block': block, 'unit': unit,
                'pairs': spec['train_pairs'], 'label_horizons': spec['training_horizons'],
                'data_sha256': sha(output/'DATA.npz'), 'source_fit_record_sha256': source_hash,
+               'assignment_sha256': sha(output/'ASSIGNMENT.npz'),
+               'assignment_report_sha256': sha(output/'ASSIGNMENT_REPORT.json'),
                'source_fit_sha256': selected['fit_sha256'],
                'source_selected_qualified': selected.get('selected_qualified', selected.get('qualified')),
                'namespace': spec['namespace'], 'scientific_generation_authorized': True,
                'latent_variables_saved': False, 'future_test_labels_generated': False,
                'recording_law_parameters_refitted_in_assets': False,
-               'parameter_source': 'retained_fit' if unit.startswith('R05_') else 'fresh_unlabeled_calibration',
-               'model_input_fields': ['x', 'y', 'fitted_period_probability'],
+               'parameter_source': 'authenticated_retained_CW1_F05_population_fit',
+               'model_input_fields': ['x', 'y', 'own_or_donor_fitted_period_probability'],
+               'source_posterior_recomputed_not_refitted': True,
                'counts': {'own_zero': int((data['x'].sum(axis=1) == 0).sum()),
                           'own_below_three': int((data['x'].sum(axis=1) < 3).sum())}})
 
@@ -56,19 +65,30 @@ def load_training(work, unit, spec):
     theta, _, source_hash = selected_fit(work, unit)
     require(report['data_sha256'] == sha(root/'DATA.npz') and
             report['source_fit_record_sha256'] == source_hash, 'Training data/source identity differs')
-    require(set(data) == {'x', 'y', 'labels', 'fitted_period_probability', 'pair_index'},
+    require(set(data) == {'x', 'y', 'labels', 'fitted_period_probability', 'fitted_clock_posterior', 'pair_index'},
             'Undeclared training fields, including latent diagnostic fields, are forbidden')
     require(data['x'].dtype == data['y'].dtype == bool and
             data['x'].shape == data['y'].shape == (spec['train_pairs'], 16) and
             data['labels'].shape == (spec['train_pairs'], 4) and
             data['labels'].dtype == np.float32 and np.isin(data['labels'], [0, 1]).all() and
             data['fitted_period_probability'].dtype == np.float64 and
+            data['fitted_clock_posterior'].shape == (spec['train_pairs'], 6) and
+            data['fitted_clock_posterior'].dtype == np.float64 and
             data['pair_index'].dtype == np.int64 and
             np.array_equal(data['pair_index'], np.arange(spec['train_pairs'], dtype=np.int64)),
             'Training shape/type/labels differ')
-    mass, _ = fitted_inputs(data['x'], data['y'], theta)
-    require(np.array_equal(mass, data['fitted_period_probability']), 'Saved fitted posterior differs')
-    return data, report, source_hash
+    mass, fitted = fitted_inputs(data['x'], data['y'], theta)
+    require(np.array_equal(mass, data['fitted_period_probability']) and
+            np.array_equal(fitted['posterior_context'], data['fitted_clock_posterior']),
+            'Saved fitted posterior differs')
+    assigned = load_npz(root/'ASSIGNMENT.npz')
+    assignment_report = read_json(root/'ASSIGNMENT_REPORT.json')
+    require(sha(root/'ASSIGNMENT.npz') == report['assignment_sha256'] ==
+            assignment_report['assignment_sha256'] and
+            sha(root/'ASSIGNMENT_REPORT.json') == report['assignment_report_sha256'],
+            'Persisted training assignment hash differs')
+    verify_assignment(spec, unit, 'train', mass, assigned, assignment_report)
+    return data, assigned, report, source_hash
 
 
 def cpu_tree(value):
@@ -88,11 +108,13 @@ def cpu_tree(value):
 
 def train(work, output, fit, spec, resume_root):
     import torch
-    from cw1_model import make_model, learned_weight_fingerprint
+    from weight_reassignment_model import make_model, learned_weight_fingerprint
     unit, arm = split_fit(fit)
     block = block_number(unit)
     identity = read_json(work/'IDENTITY.json')
-    data, assets_report, source_hash = load_training(work, unit, spec)
+    data, assigned, assets_report, source_hash = load_training(work, unit, spec)
+    supplied_mass = (assigned['reassigned_period_probability'] if arm == 'support_reassigned_fixed'
+                     else data['fitted_period_probability'])
     seed = model_seed(spec, unit)
     model = make_model(arm, seed, 'cuda')
     require(model.parameter_counts()['trainable'] == spec['expected_trainable_parameters'],
@@ -102,6 +124,8 @@ def train(work, output, fit, spec, resume_root):
                                  lr=spec['learning_rate'], betas=(.9, .999), eps=1e-8, weight_decay=0.)
     inputs = {'assets_data_sha256': assets_report['data_sha256'],
               'assets_report_sha256': sha(work/'results/assets'/unit/'REPORT.json'),
+              'assignment_sha256': assets_report['assignment_sha256'],
+              'assignment_report_sha256': assets_report['assignment_report_sha256'],
               'source_fit_record_sha256': source_hash, 'init_sha256': init_hash,
               'model_seed': seed, 'spec_sha256': sha(work/'SPEC.json')}
     resumed, history, last_payload = 0, [], None
@@ -141,9 +165,14 @@ def train(work, output, fit, spec, resume_root):
         model.train()
         for indices in batches:
             optimizer.zero_grad(set_to_none=True)
+            support_guard = (support_assignment_guard(
+                data['fitted_period_probability'][indices], supplied_mass[indices],
+                assigned['movable'][indices]) if arm == 'support_reassigned_fixed' else
+                {'applies': False, 'reason': 'Support-preserving donor contract applies only to reassigned arm'})
             logits, gate = model.forward_batch(data['x'][indices], data['y'][indices],
-                                               data['fitted_period_probability'][indices],
+                                               supplied_mass[indices],
                                                spec['training_horizons'])
+            model.sw1_last_report['recipient_assignment_guard'] = support_guard
             require(gate is None and tuple(logits.shape) == (spec['batch_size'], 4), 'Unexpected decoder output')
             target = torch.as_tensor(data['labels'][indices], device='cuda', dtype=torch.float32)
             loss = torch.nn.functional.binary_cross_entropy_with_logits(logits, target)
@@ -158,7 +187,7 @@ def train(work, output, fit, spec, resume_root):
                     'Nonfinite trained parameter; stop without a completed epoch')
             losses.append(float(loss.detach().cpu()))
             norms.append(float(norm.detach().cpu()))
-            query_reports.append(model.cw1_last_report)
+            query_reports.append(model.sw1_last_report)
         record = {'epoch': epoch, 'updates': len(losses),
                   'motif_presentations': spec['train_pairs'],
                   'label_presentations': spec['train_pairs']*4,
@@ -191,6 +220,9 @@ def train(work, output, fit, spec, resume_root):
     write_json(output/'REPORT.json', {'stage': 'train', 'fit': fit, 'block': block, 'arm': arm,
                'epoch': spec['epochs'], 'model_seed': seed, 'init_sha256': init_hash,
                'source_fit_record_sha256': source_hash, 'asset_data_sha256': assets_report['data_sha256'],
+               'assignment_sha256': assets_report['assignment_sha256'],
+               'assignment_report_sha256': assets_report['assignment_report_sha256'],
+               'bank_mass_source': 'persisted_support_compatible_donor_or_exact_anchor' if arm == 'support_reassigned_fixed' else 'recipient_fitted_period_marginal',
                'checkpoint_sha256': sha(output/'CHECKPOINT.pt'), 'checkpoint_inputs': inputs,
                'parameter_counts': model.parameter_counts(), 'budget': counts,
                'trained_parameter_sha256': learned_weight_fingerprint(model),
@@ -200,18 +232,19 @@ def train(work, output, fit, spec, resume_root):
 
 
 def pairing_checks(work, unit, spec):
-    require(tuple(spec['arms']) == ARMS, 'The declared four fixed-norm arms changed')
+    require(tuple(spec['arms']) == ARMS, 'The declared three fixed-norm arms changed')
     records = {arm: read_json(work/'results/train'/f'{unit}__{arm}'/'REPORT.json') for arm in spec['arms']}
     histories = {arm: read_json(work/'results/train'/f'{unit}__{arm}'/'TRAINING.json')['epochs'] for arm in spec['arms']}
     reference = ARMS[0]
-    for key in ('init_sha256', 'model_seed', 'source_fit_record_sha256', 'asset_data_sha256', 'budget', 'parameter_counts'):
+    for key in ('init_sha256', 'model_seed', 'source_fit_record_sha256', 'asset_data_sha256',
+                'assignment_sha256', 'assignment_report_sha256', 'budget', 'parameter_counts'):
         require(all(records[arm][key] == records[reference][key] for arm in ARMS),
-                f'Four-arm pairing differs: {key}')
+                f'Three-arm pairing differs: {key}')
     orders = {arm: [epoch['schedule_sha256'] for epoch in histories[arm]] for arm in spec['arms']}
     require(all(orders[arm] == orders[reference] and len(orders[arm]) == spec['epochs'] for arm in ARMS),
-            'Four-arm paired training order differs')
+            'Three-arm paired training order differs')
     require(all(records[arm]['arm'] == arm and records[arm]['fit'] == f'{unit}__{arm}'
-                for arm in ARMS), 'Saved fit identifiers do not match the four arms')
+                for arm in ARMS), 'Saved fit identifiers do not match the three arms')
     return records, {'arms': list(ARMS), 'reference_arm': reference,
                      'same_initialization': True, 'same_order_all_16_epochs': True,
                      'same_source_fit': True, 'same_training_assets': True, 'same_budget': True,
@@ -224,24 +257,24 @@ def evaluation_group_barrier(work, unit, spec):
 
     Receipt/hash authentication remains the session's responsibility. Keeping
     this check in the worker prevents a direct invocation from silently
-    skipping the retained-64 or fresh-192 training-completion barrier.
+    skipping the 48-fit training-completion barrier.
     """
     require(tuple(spec['arms']) == ARMS and spec['blocks'] == list(range(16)),
-            'Evaluation population differs from the locked four-arm design')
+            'Evaluation population differs from the locked three-arm design')
     condition_id = unit.rsplit('_B', 1)[0]
     matches = [row for row in spec['conditions'] if row['id'] == condition_id]
     require(len(matches) == 1, 'Unknown evaluation cohort')
     group = matches[0]['group']
     conditions = [row['id'] for row in spec['conditions'] if row['group'] == group]
-    expected = 64 if group == 'retained' else 192
-    require(group in ('retained', 'fresh') and len(conditions)*16*len(ARMS) == expected,
+    expected = 48
+    require(group == 'retained' and conditions == ['SW05'] and len(conditions)*16*len(ARMS) == expected,
             'Group fit population changed')
     for condition in conditions:
         for block in spec['blocks']:
             for arm in ARMS:
                 fit = f'{condition}_B{block:02d}__{arm}'
                 path = Path(work)/'results/train'/fit/'REPORT.json'
-                require(path.is_file(), f'All{expected} {group} fits must be sealed/restored before test generation: {fit}')
+                require(path.is_file(), f'All {expected} {group} fits must be sealed/restored before test generation: {fit}')
                 report = read_json(path)
                 require(report['fit'] == fit and report['arm'] == arm and
                         report['epoch'] == spec['epochs'] and report['selection'] == 'final_epoch_only',
@@ -286,8 +319,8 @@ def save_neural_evidence(output, arm, checkpoint_hash, logits, probability,
 
 def evaluate(work, output, unit, spec):
     import torch
-    import fc1_core
-    from cw1_model import make_model, learned_weight_fingerprint
+    import clock_inference
+    from weight_reassignment_model import make_model, learned_weight_fingerprint
     # Session authenticates/restores all sealed fits in the requested group.
     # This defense-in-depth check precedes any evaluation-cohort generation.
     evaluation_group_barrier(work, unit, spec)
@@ -296,23 +329,30 @@ def evaluate(work, output, unit, spec):
     identity = read_json(work/'IDENTITY.json')
     fit_records, paired = pairing_checks(work, unit, spec)
     data = generate(spec, unit, 'evaluation', spec['evaluation_pairs'])
-    data['labels'] = labels_for_clock(data['clock_index'], spec['evaluation_horizons'])
     mass, fitted = fitted_inputs(data['x'], data['y'], theta)
-    known = fc1_core.predict(data['x'], data['y'], true_theta(unit))
+    assigned, assignment_report = assignment(spec, unit, 'evaluation', mass)
+    data['labels'] = labels_for_clock(data['clock_index'], spec['evaluation_horizons'])
+    known = clock_inference.predict(data['x'], data['y'], true_theta(unit))
     predictions = {f'fitted_{name}': fitted[name] for name in
                    ('own_hard', 'own_soft', 'context_hard', 'context_soft')}
     predictions.update(known_law_context_soft=known['context_soft'],
                        fitted_clock_posterior=fitted['posterior_context'],
                        fitted_period_probability=mass,
+                       reassigned_period_probability=assigned['reassigned_period_probability'],
+                       reassignment_donor_index=assigned['donor_index'],
                        context_entropy=fitted['context_entropy'],
                        context_map_period=fitted['context_map_period'])
     output.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(output/'ASSIGNMENT.npz', **assigned)
+    write_json(output/'ASSIGNMENT_REPORT.json',
+               {**assignment_report, 'assignment_sha256': sha(output/'ASSIGNMENT.npz')})
     # Preserve the common evaluated cases and fixed baselines before any
     # neural arm, including when a later device error or canary stops the unit.
     np.savez_compressed(output/'DATA.npz', **data)
     np.savez_compressed(output/'BASELINE_PREDICTIONS.npz', **predictions)
     neural_reports = {}
     for arm in spec['arms']:
+        supplied_mass = (assigned['reassigned_period_probability'] if arm == 'support_reassigned_fixed' else mass)
         fit = f'{unit}__{arm}'
         checkpoint = work/'results/train'/fit/'CHECKPOINT.pt'
         require(sha(checkpoint) == fit_records[arm]['checkpoint_sha256'], 'Final checkpoint hash differs')
@@ -328,16 +368,27 @@ def evaluate(work, output, unit, spec):
         with torch.no_grad():
             for start in range(0, spec['evaluation_pairs'], spec['batch_size']):
                 stop = start+spec['batch_size']
+                support_guard = (support_assignment_guard(
+                    mass[start:stop], supplied_mass[start:stop], assigned['movable'][start:stop])
+                    if arm == 'support_reassigned_fixed' else
+                    {'applies': False, 'reason': 'Support-preserving donor contract applies only to reassigned arm'})
                 logits, gate = model.forward_batch(data['x'][start:stop], data['y'][start:stop],
-                                                   mass[start:stop], spec['evaluation_horizons'])
+                                                   supplied_mass[start:stop], spec['evaluation_horizons'])
+                model.sw1_last_report['recipient_assignment_guard'] = support_guard
                 require(gate is None and tuple(logits.shape) == (spec['batch_size'], 8), 'Evaluation layout differs')
                 require(bool(torch.isfinite(logits).all()), 'Nonfinite evaluated logits')
                 chunks.append(logits.cpu().numpy())
-                batch_reports.append({'start': start, 'stop': stop, 'query': model.cw1_last_report,
+                batch_reports.append({'start': start, 'stop': stop, 'query': model.sw1_last_report,
                                       'state': model.last_state_report})
                 if first_arrays is None:
-                    first_arrays = {k: np.asarray(v) for k, v in model.cw1_last_arrays.items()}
-                    first_arrays['decoder_metadata'] = np.asarray(model.cw1_last_metadata)
+                    first_arrays = {k: np.asarray(v) for k, v in model.sw1_last_arrays.items()}
+                    first_arrays['decoder_metadata'] = np.asarray(model.sw1_last_metadata)
+                    first_arrays['recipient_pair_index'] = data['pair_index'][start:stop].copy()
+                    first_arrays['assignment_donor_index'] = assigned['donor_index'][start:stop].copy()
+                    first_arrays['own_fitted_period_probability'] = mass[start:stop].copy()
+                    first_arrays['supplied_period_probability'] = supplied_mass[start:stop].copy()
+                    for key in ('raw_support', 'effective_support', 'eligible', 'movable', 'anchored'):
+                        first_arrays['recipient_'+key] = assigned[key][start:stop].copy()
         logits = np.concatenate(chunks)
         # Stable float64 logistic scoring preserves the raw float32 logits separately.
         probability = np.empty(logits.shape, dtype=np.float64)
@@ -365,13 +416,15 @@ def evaluate(work, output, unit, spec):
     write_json(output/'REPORT.json', {'stage': 'evaluate', 'block': block, 'unit': unit,
                'pairs': spec['evaluation_pairs'], 'horizons': spec['evaluation_horizons'],
                'data_sha256': sha(output/'DATA.npz'), 'predictions_sha256': sha(output/'PREDICTIONS.npz'),
+               'assignment_sha256': sha(output/'ASSIGNMENT.npz'),
+               'assignment_report_sha256': sha(output/'ASSIGNMENT_REPORT.json'),
                'source_fit_sha256': selected['fit_sha256'], 'source_fit_record_sha256': source_hash,
                'pairing': paired, 'neural': neural_reports,
                'evaluated_neural_arms': list(ARMS),
                'neural_forecast_rows': spec['evaluation_pairs']*len(spec['evaluation_horizons'])*len(ARMS),
                'training_during_evaluation': False, 'recording_parameters_refitted': False,
                'hidden_fields_passed_to_neural_models': False,
-               'interpretation': 'The four arms compare hard, equal-both, normalized fitted-soft and always-period-four banks, all pre-fusion norm2. Retraining includes parameter coadaptation; contrasts do not isolate an acute attention mechanism. h5-h8 repeats h1-h4 by supplied symmetry, not learned extrapolation.'})
+               'interpretation': 'The three arms compare own fitted-soft, equal-both and support-preserving reassigned fitted-soft banks, all pre-fusion norm2. Reassignment preserves recipient mathematical/float32 support; noneligible and singleton rows retain their own vector. Eligible dual-positive rows are deranged once per split. Motif-level weight distribution is preserved, not event-slot weighting or associations with confidence/counts. Retraining includes parameter coadaptation; this is not an acute intervention. h5-h8 repeats h1-h4 by supplied symmetry, not learned extrapolation.'})
 
 
 def main():
@@ -392,7 +445,7 @@ def main():
     elif args.phase == 'evaluate':
         evaluate(args.work, args.output, args.unit, spec)
     else:
-        from cw1_analysis import analyze
+        from weight_reassignment_analysis import analyze
         require(args.unit == 'all', 'Analysis requires all blocks')
         analyze(args.work, args.output, spec)
 

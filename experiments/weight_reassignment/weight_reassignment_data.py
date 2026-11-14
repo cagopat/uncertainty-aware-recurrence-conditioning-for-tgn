@@ -8,8 +8,8 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from sw1_io import canonical_hash, read_json, require
-from sw1_encoding import period_probabilities, support_profile, support_assignment_guard
+from weight_reassignment_io import canonical_hash, read_json, require
+from weight_reassignment_encoding import period_probabilities, support_profile, support_assignment_guard
 
 ARMS = ('soft_fixed', 'equal_fixed', 'support_reassigned_fixed')
 CONDITIONS = ('SW05',)
@@ -128,7 +128,7 @@ def generate(spec, unit, split, count):
 
 
 def selected_fit(work, unit):
-    from fc1_core import validate_theta
+    from clock_inference import validate_theta
     block = block_number(unit)
     work = Path(work)
     record = read_json(work/'source/SELECTED_FITS.json')['blocks'][f'B{block:02d}']
@@ -142,7 +142,7 @@ def selected_fit(work, unit):
 
 
 def fitted_inputs(own, neighbor, theta):
-    from fc1_core import predict
+    from clock_inference import predict
     prediction = predict(own, neighbor, theta)
     mass = prediction['context_period_masses']
     require(mass.shape == (len(own), 2) and np.isfinite(mass).all() and

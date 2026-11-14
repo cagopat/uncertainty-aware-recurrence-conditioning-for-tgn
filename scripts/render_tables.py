@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render saved CW1/SW1 summary arithmetic as readable Markdown and CSV.
+"""Render saved clock-weight and weight-reassignment summaries as Markdown and CSV.
 
 This reads completed SUMMARY.json only. It does not fit or evaluate models.
 """

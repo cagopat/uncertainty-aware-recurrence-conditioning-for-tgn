@@ -1,4 +1,4 @@
-"""CW1 query-only fitted-period representation, with unchanged functional TGN.
+"""SW1 query-only fitted-period representation, with unchanged functional TGN.
 
 Import is non-neural. make_model and preflight_fixture are reserved for explicit
 user-authorized Colab execution. No source FC1 fit is optimized by this module.
@@ -12,8 +12,9 @@ from types import MethodType
 
 import numpy as np
 
-from cw1_encoding import (ARMS, TIME_DIM, bank_weights, decoder_metadata, encoding_records,
-                          phase_bank, records, require)
+from weight_reassignment_encoding import (ARMS, TIME_DIM, bank_weights, decoder_metadata, encoding_records,
+                          phase_bank, records, require, support_profile,
+                          support_assignment_guard)
 
 EXPECTED_TRAINABLE_PARAMETERS = 50434
 FUSION_TRAINABLE_PARAMETERS = 528
@@ -23,12 +24,12 @@ RTOL = 2e-5
 
 def inherited_module():
     root = Path(__file__).resolve().parent / 'inherited'
-    require((root / 'gj1_model.py').is_file(), 'Authenticated inherited model is missing')
+    require((root / 'tgn_host.py').is_file(), 'Authenticated inherited model is missing')
     if str(root) not in sys.path:
         sys.path.append(str(root))
-    module = importlib.import_module('gj1_model')
-    require(Path(module.__file__).resolve() == root / 'gj1_model.py',
-            'A different gj1_model was imported')
+    module = importlib.import_module('tgn_host')
+    require(Path(module.__file__).resolve() == root / 'tgn_host.py',
+            'A different tgn_host was imported')
     return module
 
 
@@ -64,16 +65,26 @@ class EncodingContext:
                 t.dtype == e.dtype == torch.float32 and t.device == e.device,
                 'Unexpected query feature layout/dtype/device')
         valid = torch.as_tensor(a['valid'], device=t.device)
-        query_np = phase_bank(a['channels'], a['period_probability'], self.model.cw1_arm)
+        query_np = phase_bank(a['channels'], a['period_probability'], self.model.sw1_arm)
+        weights = bank_weights(a['period_probability'], self.model.sw1_arm)
+        expected_support = (weights['effective_period_weights'].astype(np.float32) > 0)
+        actual_support = np.any(query_np[:, :, :4].reshape(
+            len(query_np), query_np.shape[1], 2, 2) != 0, axis=-1)
+        expected_slot_support = expected_support[:, None, :] & a['valid'][:, :, None]
+        require(np.array_equal(actual_support, expected_slot_support),
+                'Actual float32 phase-bank support differs from declared coefficient support')
+        a['supplied_raw_period_support'] = support_profile(a['period_probability'])['raw_support']
+        a['applied_float32_period_support'] = expected_support
+        a['actual_bank_period_support'] = actual_support
         query = torch.as_tensor(query_np, device=t.device)
         cutoff = self.model.host.time_encoder(torch.as_tensor(a['cutoff_age'], device=t.device))
         require(cutoff.shape == t.shape, 'Cutoff-age feature width changed')
-        mixed = self.model.cw1_query_fusion(torch.cat((query, cutoff), dim=-1))
+        mixed = self.model.sw1_query_fusion(torch.cat((query, cutoff), dim=-1))
         out_t = torch.where(valid[..., None], mixed, t)
         require(torch.equal(out_t[~valid], t[~valid]), 'Padding features changed')
         require(bool(torch.isfinite(out_t).all()), 'Nonfinite query features')
         a['query_input_norm'] = query.detach().norm(dim=-1).cpu().numpy()
-        a.update(bank_weights(a['period_probability'], self.model.cw1_arm))
+        a.update(weights)
         a['expected_query_input_norm'] = np.where(
             a['valid'], 2.*a['applied_radial_factor'][:, None], 0.)
         require(np.array_equal(query_np[~a['valid']], np.zeros_like(query_np[~a['valid']])),
@@ -86,23 +97,26 @@ class EncodingContext:
         a['output_time_norm'] = out_t.detach().norm(dim=-1).cpu().numpy()
         a['output_edge_norm'] = e.detach().norm(dim=-1).cpu().numpy()
         self.report = {
-            'arm': self.model.cw1_arm, 'hook_calls': self.calls,
+            'arm': self.model.sw1_arm, 'hook_calls': self.calls,
             'query_rows': len(valid), 'valid_slots': int(a['valid'].sum()),
             'empty_query_rows': int(np.sum(~a['valid'].any(axis=1))),
             'padding_unchanged': True, 'edge_features_unscaled': True,
-            'cutoff': 95, 'period_inference': 'fixed_authenticated_retained_or_fresh_fitted_context_period_marginals',
+            'cutoff': 95, 'period_inference': 'fixed_authenticated_CW1_F05_marginals_or_declared_donor_marginals',
             'true_sharing_indicator_exposed': False,
             'decoder_raw_horizon_exposed': False,
             'historical_message_transform_changed': False,
             'shared_parameters_may_coadapt': True,
-            'clock_weight_rule': self.model.cw1_arm,
+            'clock_weight_rule': self.model.sw1_arm,
             'bank_squared_norm': '4',
-            'norm_matched_across_all_four_arms': True,
+            'norm_matched_across_all_three_arms': True,
             'norm_canary_absolute_tolerance': 1e-6,
             'norm_canary_relative_tolerance': 1e-6,
             'norm_canary_maximum_difference': float(np.max(norm_difference)) if norm_difference.size else 0.,
             'norm_canary_scope': 'Valid query-bank slots before learned cutoff-age fusion; not the fused/output feature norms',
             'adaptive_magnitude_applied': False,
+            'actual_float32_bank_support_checked': True,
+            'bank_support_mismatch_count': 0,
+            'support_scope': 'Actual valid-slot phase channels before fusion; equal arm intentionally supplies both channels',
             'bank_weights_are_probability_forecasts': False,
             'six_clock_phase_posterior_consumed_directly': False,
             'direct_fitted_forecast_consumed': False,
@@ -112,41 +126,41 @@ class EncodingContext:
 
 def make_model(arm, seed, device):
     """Construct only during approved Colab preflight/training/evaluation."""
-    require(arm in ARMS, 'Unregistered CW1 neural arm')
+    require(arm in ARMS, 'Unregistered SW1 neural arm')
     source = inherited_module()
     model = source.make_model('native', seed, device)
     import torch
-    model.cw1_query_fusion = torch.nn.Linear(2*TIME_DIM, TIME_DIM, bias=True).to(device)
+    model.sw1_query_fusion = torch.nn.Linear(2*TIME_DIM, TIME_DIM, bias=True).to(device)
     with torch.no_grad():
-        model.cw1_query_fusion.weight.copy_(torch.cat((.5*torch.eye(TIME_DIM),
+        model.sw1_query_fusion.weight.copy_(torch.cat((.5*torch.eye(TIME_DIM),
                                                      .5*torch.eye(TIME_DIM)), dim=1).to(device))
-        model.cw1_query_fusion.bias.zero_()
+        model.sw1_query_fusion.bias.zero_()
     require(model.parameter_counts()['trainable'] == EXPECTED_TRAINABLE_PARAMETERS,
-            'CW1 trainable parameter count changed')
-    require(sum(p.numel() for p in model.cw1_query_fusion.parameters()) == FUSION_TRAINABLE_PARAMETERS,
-            'CW1 fusion capacity changed')
+            'SW1 trainable parameter count changed')
+    require(sum(p.numel() for p in model.sw1_query_fusion.parameters()) == FUSION_TRAINABLE_PARAMETERS,
+            'SW1 fusion capacity changed')
     host_module = importlib.import_module('train.models.MemoryModel')
     expected = Path(source.__file__).resolve().parent/'runtime/train/models/MemoryModel.py'
     require(Path(host_module.__file__).resolve() == expected, 'Another temporal host was imported')
     original_hook = host_module._keat_apply
     original_metadata = source.recurrence_inputs
     original_forward = model.forward_batch
-    model.cw1_arm = arm
-    model.cw1_last_report = None
-    model.cw1_last_arrays = None
-    model.cw1_last_metadata = None
+    model.sw1_arm = arm
+    model.sw1_last_report = None
+    model.sw1_last_arrays = None
+    model.sw1_last_metadata = None
 
     def forward_batch(self, own, neighbor, period_probability, horizons):
         require(host_module._keat_apply is original_hook and source.recurrence_inputs is original_metadata,
                 'Another query hook is active; isolated sequential workers are required')
         own, neighbor = records(own, 'own'), records(neighbor, 'neighbor')
         context = EncodingContext(self, own, neighbor, period_probability, horizons)
-        self.cw1_last_report = self.cw1_last_arrays = self.cw1_last_metadata = None
+        self.sw1_last_report = self.sw1_last_arrays = self.sw1_last_metadata = None
 
         def scoped_metadata(*args, **kwargs):
             metadata, phi = original_metadata(*args, **kwargs)
             metadata = decoder_metadata(metadata)
-            self.cw1_last_metadata = metadata.copy()
+            self.sw1_last_metadata = metadata.copy()
             return metadata, np.zeros_like(phi)
 
         host_module._keat_apply, source.recurrence_inputs = context.apply, scoped_metadata
@@ -156,7 +170,7 @@ def make_model(arm, seed, device):
             result = original_forward(own, neighbor, False, True, horizons, 'none')
             require(context.calls == 1 and context.report is not None, 'Query transform was not exercised')
             require(self.arm == 'native', 'Unexpected inherited decoder arm')
-            self.cw1_last_report, self.cw1_last_arrays = context.report, context.arrays
+            self.sw1_last_report, self.sw1_last_arrays = context.report, context.arrays
             return result
         finally:
             host_module._keat_apply, source.recurrence_inputs = original_hook, original_metadata
@@ -189,7 +203,7 @@ def preflight_fixture(device):
     host_module = importlib.import_module('train.models.MemoryModel')
     untouched_hook, untouched_metadata = host_module._keat_apply, inherited.recurrence_inputs
     initial = {arm: learned_weight_fingerprint(model) for arm, model in models.items()}
-    require(len(set(initial.values())) == 1, 'Four-arm matched initialization differs')
+    require(len(set(initial.values())) == 1, 'Three-arm matched initialization differs')
     result = {'optimizer_steps': 0, 'generated_study_cases': 0,
               'arms': list(ARMS), 'matched_initial_parameters': True,
               'initialization_fingerprints': initial,
@@ -201,37 +215,44 @@ def preflight_fixture(device):
     one_hot_logits, restored_checks, history_states = {}, {}, {}
     one_hot_mass = np.asarray([[1., 0.], [0., 1.], [1., 0.]])
     for model in models.values():
+        # Explicit precomputed donor map; the model itself must never shuffle
+        # the supplied weights as a function of batching or horizon.
+        arm_mass = mass[[1, 2, 0]] if model.sw1_arm == 'support_reassigned_fixed' else mass
+        if model.sw1_arm == 'support_reassigned_fixed':
+            support_assignment_guard(mass, arm_mass, np.ones(len(mass), dtype=bool))
         model.eval()
         before = learned_weight_fingerprint(model)
         with torch.no_grad():
-            logits, _ = model.forward_batch(own, neighbor, mass, list(range(1, 9)))
+            logits, _ = model.forward_batch(own, neighbor, arm_mass, list(range(1, 9)))
             values = logits.detach().cpu().numpy()
             require(model.last_state_report['functional_state'] and
                     model.last_state_report['query_read_only'] and
                     model.last_state_report['pending_messages'] == 0,
                     'Functional-memory or pending-message contract changed')
             state_hash = model.last_state_report['state_sha256']
-            history_states[model.cw1_arm] = state_hash
+            history_states[model.sw1_arm] = state_hash
             require(np.allclose(values[:, :4], values[:, 4:], atol=ATOL, rtol=RTOL),
                     'Four-step input symmetry failed to preserve logits')
             probability = torch.sigmoid(logits.double()).detach().cpu().numpy()
             probability_cycle_error = float(np.max(np.abs(probability[:, :4]-probability[:, 4:])))
             require(probability_cycle_error <= 1e-5,
                     'Four-step probability symmetry exceeds the scientific 1e-5 canary')
-            require(np.all(model.cw1_last_metadata[:, :, :2] == 0) and
-                    np.all(model.cw1_last_metadata[:, :, 2] == 1),
+            require(np.all(model.sw1_last_metadata[:, :, :2] == 0) and
+                    np.all(model.sw1_last_metadata[:, :, 2] == 1),
                     'Raw horizon or hidden relevance reached decoder')
-            require(model.cw1_last_report['padding_unchanged'], 'Padding check absent')
+            require(model.sw1_last_report['padding_unchanged'], 'Padding check absent')
+            require(model.sw1_last_report['actual_float32_bank_support_checked'],
+                    'Actual phase-bank support check absent')
             per_row = []
             for index in range(len(own)):
                 one, _ = model.forward_batch(own[index:index+1], neighbor[index:index+1],
-                                             mass[index:index+1], list(range(1, 9)))
+                                             arm_mass[index:index+1], list(range(1, 9)))
                 per_row.append(one.detach().cpu().numpy()[0])
             independent = np.asarray(per_row)
             require(np.allclose(values, independent, atol=ATOL, rtol=RTOL),
                     'Canonical versus singleton batching exceeded fixed tolerance')
             one_hot, _ = model.forward_batch(own, neighbor, one_hot_mass, list(range(1, 9)))
-            one_hot_logits[model.cw1_arm] = one_hot.detach().cpu().numpy()
+            one_hot_logits[model.sw1_arm] = one_hot.detach().cpu().numpy()
             # An in-memory, zero-update checkpoint roundtrip checks restoration
             # without a cohort, optimizer, training update or disk checkpoint.
             import io
@@ -241,25 +262,25 @@ def preflight_fixture(device):
                         'cuda_rng': [s.cpu() for s in torch.cuda.get_rng_state_all()]}, buffer)
             buffer.seek(0)
             restored_state = torch.load(buffer, map_location='cpu', weights_only=True)
-            restored = make_model(model.cw1_arm, 43119, device)
+            restored = make_model(model.sw1_arm, 43119, device)
             restored.load_state_dict(restored_state['model'], strict=True)
             torch.set_rng_state(restored_state['rng'])
             torch.cuda.set_rng_state_all(restored_state['cuda_rng'])
             restored.eval()
-            resumed, _ = restored.forward_batch(own, neighbor, mass, list(range(1, 9)))
+            resumed, _ = restored.forward_batch(own, neighbor, arm_mass, list(range(1, 9)))
             resumed_values = resumed.detach().cpu().numpy()
             require(np.allclose(resumed_values, values, atol=ATOL, rtol=RTOL),
                     'Zero-update checkpoint restoration changed fixture logits')
             require(restored.last_state_report['state_sha256'] == state_hash and
                     learned_weight_fingerprint(restored) == before,
                     'Zero-update restoration changed memory or learned weights')
-            restored_checks[model.cw1_arm] = {
+            restored_checks[model.sw1_arm] = {
                 'maximum_logit_difference': float(np.max(np.abs(resumed_values-values))),
                 'functional_history_state_identical': True, 'optimizer_steps': 0,
                 'scope': 'Handwritten fixture state_dict and RNG roundtrip, not trained checkpoint replay'}
             del restored, restored_state
         require(learned_weight_fingerprint(model) == before, 'Read-only fixture changed weights')
-        result['forward_checks'][model.cw1_arm] = {
+        result['forward_checks'][model.sw1_arm] = {
             'four_step_max_abs_logit_difference': float(np.max(np.abs(values[:, :4]-values[:, 4:]))),
             'four_step_max_abs_probability_difference': probability_cycle_error,
             'batch_max_abs_logit_difference': float(np.max(np.abs(values-independent))),
@@ -270,7 +291,7 @@ def preflight_fixture(device):
         model.capture_gradient = True
         model.zero_grad(set_to_none=True)
         try:
-            logits, _ = model.forward_batch(own, neighbor, mass, [1, 2, 3, 4])
+            logits, _ = model.forward_batch(own, neighbor, arm_mass, [1, 2, 3, 4])
             (logits.square().mean()+logits.mean()).backward()
             early = model.earliest_memory
             require(early is not None and early.grad is not None, 'No earliest-memory gradient')
@@ -278,7 +299,7 @@ def preflight_fixture(device):
             for label, module in (('time_encoder', model.host.time_encoder),
                                   ('memory_gru', model.host.memory_updater.memory_updater),
                                   ('attention', model.host.embedding_module.temporal_conv_layers),
-                                  ('query_fusion', model.cw1_query_fusion),
+                                  ('query_fusion', model.sw1_query_fusion),
                                   ('decoder', model.decoder)):
                 gradients = [p.grad for p in module.parameters() if p.requires_grad and p.grad is not None]
                 require(gradients and all(bool(torch.isfinite(g).all()) for g in gradients),
@@ -286,7 +307,7 @@ def preflight_fixture(device):
                 groups[label] = sum(float(g.detach().abs().sum().cpu()) for g in gradients)
             require(all(v > 0 for v in groups.values()), 'A required historical/query gradient is zero')
             require(learned_weight_fingerprint(model) == before, 'Gradient fixture changed weights')
-            result['gradient_checks'][model.cw1_arm] = groups
+            result['gradient_checks'][model.sw1_arm] = groups
         finally:
             model.zero_grad(set_to_none=True)
             model.capture_gradient = False
@@ -299,22 +320,19 @@ def preflight_fixture(device):
     require(len(set(history_states.values())) == 1,
             'Matched initialization must reconstruct identical historical memory across arms')
     result['historical_memory_identical_at_matched_initialization'] = True
-    require(np.array_equal(one_hot_logits['hard_fixed'], one_hot_logits['soft_fixed']),
-            'One-hot hard and normalized-soft inputs must give identical logits')
-    require(np.array_equal(one_hot_logits['period4_fixed'][1], one_hot_logits['hard_fixed'][1]),
-            'Always-P4 must agree with hard on the one-hot-P4 handwritten row')
+    require(np.array_equal(one_hot_logits['support_reassigned_fixed'], one_hot_logits['soft_fixed']),
+            'Soft and reassigned must match when explicitly supplied identical masses')
     weights = {arm: bank_weights(mass, arm)['effective_period_weights'] for arm in ARMS}
-    require(np.array_equal(weights['period4_fixed'], np.tile([[0., 1.]], (3, 1))),
-            'The period-four control must ignore candidate posterior weights')
     require(np.array_equal(weights['equal_fixed'], np.full((3, 2), 1./np.sqrt(2.))),
             'The equal control must use both clock banks at 1/sqrt(2)')
     require(np.array_equal(weights['equal_fixed'][0], weights['soft_fixed'][0]),
             'Equal and normalized-soft weights must coincide at posterior tie')
-    result['one_hot_hard_soft_bitwise_equal'] = True
-    result['one_hot_period4_row_bitwise_equal'] = True
-    result['equal_and_period4_weights_verified'] = True
+    require(np.array_equal(weights['soft_fixed'], weights['support_reassigned_fixed']),
+            'Reassigned arm must normalize supplied masses identically to soft')
+    result['identical_supplied_masses_soft_reassigned_bitwise_equal'] = True
+    result['equal_fixed_weights_verified'] = True
     result['all_arms_valid_pre_fusion_bank_norm_two'] = True
     result['checkpoint_roundtrip'] = restored_checks
-    result['cross_arm_scope'] = 'Matched initialization; equal-both and always-P4 need not match hard/soft away from their exact defining coincidences'
+    result['cross_arm_scope'] = 'Matched initialization: soft/reassigned identical when masses identical; actual reassigned fixture uses an externally fixed donor map, preserved by singleton/full batching'
     return result
 

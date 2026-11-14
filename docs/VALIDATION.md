@@ -4,12 +4,12 @@ Initial public packaging date: 2026-11-14.
 
 ## Checked during packaging
 
-- The 43 copied scientific source/configuration files match their authenticated original package bytes. No scientific implementation was rewritten for this release.
-- The original CW1 and SW1 return archives were read locally and matched their SHA-256 receipts. Sixteen F05 fit records were checked against their original completion manifests and the selection mapping retained by SW1.
+- The 43 copied scientific source/configuration files were authenticated against the original package bytes during initial packaging. The descriptive-name update changes module names and import references, not scientific algorithms; provenance retains the original hashes and verifies those name-only transformations.
+- The original clock-weight and support-preserving weight-reassignment return archives were read locally and matched their SHA-256 receipts. Sixteen half-shared-neighbor fit records were checked against their original completion manifests and the selection mapping retained by the weight-reassignment study.
 - The public package contains no private machine home paths or recognized credential strings in its scanned text. Historical executed notebooks, logs, prediction arrays and neural checkpoints are excluded.
 - The technical suite exercises handwritten phase-bank, support-preserving reassignment, metric, workflow and formatting cases. Torch imports and scientific generator/fitter/forecast entry points are prohibited in that suite.
 - Read-only `plan`, `status` and help paths were checked without importing the scientific model or creating a run.
-- The package manifest checks all shipped files; source-provenance checks separately bind scientific files to their original hashes. Tests also verify that tampering is rejected.
+- The package manifest checks all shipped files; source-provenance checks separately bind scientific files to their original hashes while accounting for the documented naming-only changes. Tests also verify that tampering is rejected.
 
 The test output and GitHub Actions status give the current test count and pass/fail result. CI is configured for software checks only; it has no GPU training step.
 

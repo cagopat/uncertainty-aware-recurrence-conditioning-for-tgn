@@ -2,8 +2,8 @@
 from pathlib import Path
 import platform
 import numpy as np
-from cw1_io import read_json, require, sha, write_json
-from cw1_data import CLOCKS, TIMES, load_npz, ARMS, CONDITIONS, block_number
+from clock_weights_io import read_json, require, sha, write_json
+from clock_weights_data import CLOCKS, TIMES, load_npz, ARMS, CONDITIONS, block_number
 LOGLOSS_CLIP=1e-7
 PRIMARY="soft_fixed_minus_equal_fixed"
 METHODS=tuple("neural_"+a for a in ARMS)+(
@@ -151,8 +151,8 @@ def contrast_definitions():
 
 def direct_predictions(theta, data, spec, unit=None):
     """Approved-stage forecast helper, not called on import or by author tests."""
-    from fc1_core import predict
-    from cw1_data import true_theta
+    from clock_inference import predict
+    from clock_weights_data import true_theta
     require(unit is not None, 'Known-law reference requires explicit condition')
     fitted = predict(data['x'],data['y'],theta)
     known = predict(data['x'],data['y'],true_theta(unit))
@@ -169,7 +169,7 @@ def _validate_saved(data,predictions,methods):
     require(data['x'].shape == data['y'].shape == (n,16) and np.isin(data['x'],[0,1]).all()
             and np.isin(data['y'],[0,1]).all(), 'Saved history alignment differs')
     require(data['labels'].shape == (n,8), 'Eight horizon labels required')
-    from cw1_data import labels_for_clock
+    from clock_weights_data import labels_for_clock
     require(np.array_equal(data['labels'],labels_for_clock(data['clock_index'],np.arange(1,9))),
             'Saved labels disagree with saved latent evaluation clocks')
     for method in methods:
@@ -279,7 +279,7 @@ def aggregate(blocks,spec,methods=METHODS,definitions=None):
 
 def saved_audit(work,output,spec):
     """Explicitly approved CPU historical arithmetic; no generation or fitting."""
-    from cw1_source import verify_imported
+    from clock_weights_source import verify_imported
     work,output=Path(work),Path(output)
     provenance=verify_imported(work/'source')
     methods=('neural_hard_fixed','neural_soft_fixed','neural_hard_adaptive','neural_soft_adaptive',
@@ -308,7 +308,7 @@ def saved_audit(work,output,spec):
 
 
 def analyze(work,output,spec,cohorts=None):
-    from cw1_data import selected_fit
+    from clock_weights_data import selected_fit
     work,output=Path(work),Path(output)
     chosen=list(CONDITIONS) if cohorts is None else list(cohorts)
     # Accept either condition identifiers or the complete unit list used by session.

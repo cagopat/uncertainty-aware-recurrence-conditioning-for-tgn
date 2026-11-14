@@ -2,8 +2,8 @@
 from pathlib import Path
 import platform
 import numpy as np
-from sw1_io import read_json, require, sha, write_json
-from sw1_data import CLOCKS, TIMES, load_npz, ARMS, CONDITIONS, block_number, support_profile
+from weight_reassignment_io import read_json, require, sha, write_json
+from weight_reassignment_data import CLOCKS, TIMES, load_npz, ARMS, CONDITIONS, block_number, support_profile
 LOGLOSS_CLIP=1e-7
 PRIMARY="soft_fixed_minus_support_reassigned_fixed"
 METHODS=tuple("neural_"+a for a in ARMS)+(
@@ -323,8 +323,8 @@ def support_diagnostics(data, predictions):
 
 def direct_predictions(theta, data, spec, unit=None):
     """Approved-stage forecast helper, not called on import or by author tests."""
-    from fc1_core import predict
-    from sw1_data import true_theta
+    from clock_inference import predict
+    from weight_reassignment_data import true_theta
     require(unit is not None, 'Known-law reference requires explicit condition')
     fitted = predict(data['x'],data['y'],theta)
     known = predict(data['x'],data['y'],true_theta(unit))
@@ -341,7 +341,7 @@ def _validate_saved(data,predictions,methods):
     require(data['x'].shape == data['y'].shape == (n,16) and np.isin(data['x'],[0,1]).all()
             and np.isin(data['y'],[0,1]).all(), 'Saved history alignment differs')
     require(data['labels'].shape == (n,8), 'Eight horizon labels required')
-    from sw1_data import labels_for_clock
+    from weight_reassignment_data import labels_for_clock
     require(np.array_equal(data['labels'],labels_for_clock(data['clock_index'],np.arange(1,9))),
             'Saved labels disagree with saved latent evaluation clocks')
     for method in methods:
@@ -462,7 +462,7 @@ def aggregate(blocks,spec,methods=METHODS,definitions=None):
 
 
 def analyze(work,output,spec,cohorts=None):
-    from sw1_data import selected_fit, verify_assignment
+    from weight_reassignment_data import selected_fit, verify_assignment
     work,output=Path(work),Path(output)
     chosen=list(CONDITIONS) if cohorts is None else list(cohorts)
     # Accept either condition identifiers or the complete unit list used by session.

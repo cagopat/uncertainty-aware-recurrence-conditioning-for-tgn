@@ -75,7 +75,7 @@ def scan_text(name, text):
 
 def check_inputs(root):
     root = Path(root)
-    fits = root / "inputs" / "cw1_f05"
+    fits = root / "inputs" / "half_shared_clock_fits"
     expected = {f"F05_B{block:02d}" for block in range(16)}
     actual = {p.name for p in fits.iterdir() if p.is_dir()}
     if actual != expected:
@@ -108,7 +108,7 @@ def check_inputs(root):
     for name in ("SELECTED_FITS.json", "provenance.json"):
         if not (fits / name).is_file():
             raise ValueError(f"Missing fit-bundle provenance: {name}")
-    if not (root / "inputs" / "FC1_SPEC.json").is_file():
+    if not (root / "inputs" / "clock_fitting_spec.json").is_file():
         raise ValueError("Missing original clock-fitting specification")
     return len(expected)
 
@@ -117,21 +117,61 @@ def check_source_provenance(root):
     root = Path(root)
     provenance = json.loads((root / "SOURCE_PROVENANCE.json").read_text(encoding="utf-8"))
     records = provenance.get("files", {})
-    if provenance.get("scientific_modules_modified") is not False or not records:
+    schema = provenance.get("schema_version", 1)
+    if schema not in (1, 2) or not records:
         raise ValueError("Scientific source must retain its original provenance")
+    if schema == 1 and provenance.get("scientific_modules_modified") is not False:
+        raise ValueError("Scientific source must retain its original provenance")
+    if schema == 2 and provenance.get("scientific_algorithms_modified") is not False:
+        raise ValueError("Name-only source provenance must not claim algorithm changes")
     for name, record in records.items():
         path = PurePosixPath(name)
         if (path.is_absolute() or ".." in path.parts or "\\" in name
                 or path.as_posix() != name or not name.startswith("experiments/")):
             raise ValueError(f"Unsafe source-provenance path: {name}")
-        if record.get("byte_identical") is not True or digest(root / name) != record.get("sha256"):
+        current_path = root / name
+        if digest(current_path) != record.get("sha256"):
             raise ValueError(f"Original scientific source changed: {name}")
+        if schema == 1:
+            if record.get("byte_identical") is not True:
+                raise ValueError(f"Original scientific source changed: {name}")
+            continue
+        original_hash = record.get("original_sha256")
+        replacements = record.get("name_replacements")
+        if (not re.fullmatch(r"[0-9a-f]{64}", str(original_hash))
+                or not isinstance(replacements, list)
+                or not isinstance(record.get("byte_identical"), bool)):
+            raise ValueError(f"Malformed name-only source provenance: {name}")
+        current_bytes = current_path.read_bytes()
+        original_text = current_bytes.decode("utf-8")
+        for replacement in reversed(replacements):
+            if (not isinstance(replacement, dict) or set(replacement) != {"old", "new"}
+                    or not all(isinstance(replacement[key], str) and replacement[key]
+                               for key in ("old", "new"))
+                    or not all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*",
+                                            replacement[key]) for key in ("old", "new"))
+                    or replacement["old"] == replacement["new"]):
+                raise ValueError(f"Malformed name replacement: {name}")
+            original_text = original_text.replace(replacement["new"], replacement["old"])
+        original_bytes = original_text.encode("utf-8")
+        if hashlib.sha256(original_bytes).hexdigest() != original_hash:
+            raise ValueError(f"Original source not recovered by declared name replacements: {name}")
+        restored_current = original_text
+        for replacement in replacements:
+            restored_current = restored_current.replace(replacement["old"], replacement["new"])
+        if restored_current.encode("utf-8") != current_bytes:
+            raise ValueError(f"Name replacements are not reversible: {name}")
+        if record["byte_identical"] != (original_bytes == current_bytes):
+            raise ValueError(f"Byte-identity declaration differs: {name}")
     required = {path.relative_to(root).as_posix()
                 for path in (root / "experiments").rglob("*.py")
                 if "tests" not in path.relative_to(root).parts and "__pycache__" not in path.parts}
     if not required <= set(records):
         raise ValueError(f"Scientific source missing provenance: {sorted(required-set(records))}")
-    for study in ("cw1", "sw1"):
+    studies = ("clock_weights", "weight_reassignment")
+    if schema == 1 and not (root / "experiments/clock_weights").is_dir():
+        studies = ("cw1", "sw1")
+    for study in studies:
         if digest(root / "configs" / f"{study}.json") != digest(root / "experiments" / study / "SPEC.json"):
             raise ValueError(f"Public configuration differs from original specification: {study}")
     return len(records)
@@ -152,7 +192,7 @@ def check(root):
                 parsed += 1
     fit_count = check_inputs(root)
     source_count = check_source_provenance(root)
-    for study in ("cw1", "sw1"):
+    for study in ("clock_weights", "weight_reassignment"):
         spec = json.loads((root / "configs" / f"{study}.json").read_text(encoding="utf-8"))
         if spec.get("blocks") != list(range(16)) or spec.get("epochs") != 16:
             raise ValueError(f"Unexpected declared full-study budget: {study}")

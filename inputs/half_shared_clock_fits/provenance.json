@@ -2,7 +2,7 @@
   "fits": {
     "F05_B00": {
       "completion_sha256": "e58e57dc2511ca16e48936264e9c474df5b69b2dd3b9a4e81b397321090a7014",
-      "path": "inputs/cw1_f05/F05_B00/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B00/FIT.json",
       "selected_endpoint": 11,
       "selected_qualified": true,
       "sha256": "e485fc9b65dd2590c0a1d019d413273f6afbba9bbf8333477ea2979e85bdd7c2",
@@ -10,7 +10,7 @@
     },
     "F05_B01": {
       "completion_sha256": "62956e8d3f00514d6ca93ba7c11440ec4ee76d5ef43a25d7eba60f18041e18a2",
-      "path": "inputs/cw1_f05/F05_B01/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B01/FIT.json",
       "selected_endpoint": 1,
       "selected_qualified": true,
       "sha256": "90457283cf99f5c42b2df5c27e2bef2854cd8b90a8da056c71c133188edd5f42",
@@ -18,7 +18,7 @@
     },
     "F05_B02": {
       "completion_sha256": "7b7ebc8fb7b8367ccc4b542f5c2d53f844b6c547dcb8627a873d20dabb48dafd",
-      "path": "inputs/cw1_f05/F05_B02/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B02/FIT.json",
       "selected_endpoint": 11,
       "selected_qualified": true,
       "sha256": "7e1116c2c3b95264aa890ce2d09bcf22eeab08cc05311665ec356e42f7096db5",
@@ -26,7 +26,7 @@
     },
     "F05_B03": {
       "completion_sha256": "af20f54ae6606ae3b82d3745dafbb8a283af39af97bd80eaabc282262495350f",
-      "path": "inputs/cw1_f05/F05_B03/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B03/FIT.json",
       "selected_endpoint": 9,
       "selected_qualified": true,
       "sha256": "e77c961553a0879d0893fd7739aaf8df2d9119f8b25abe0af57fa8d9dc244370",
@@ -34,7 +34,7 @@
     },
     "F05_B04": {
       "completion_sha256": "fd66efcc3e12fbcc17154bf44de9daaa6988fd9f2ca233f80d631068bfa4a14c",
-      "path": "inputs/cw1_f05/F05_B04/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B04/FIT.json",
       "selected_endpoint": 9,
       "selected_qualified": true,
       "sha256": "853dcd1f2431c844b91b8934446623cdfd90b4d0b884d780989494b0621eff57",
@@ -42,7 +42,7 @@
     },
     "F05_B05": {
       "completion_sha256": "9ea5d4f61c81d7b0185a7a88f71392da2b84f6fc34035374c3fd4f07aa6770ba",
-      "path": "inputs/cw1_f05/F05_B05/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B05/FIT.json",
       "selected_endpoint": 7,
       "selected_qualified": true,
       "sha256": "a5174d7b42fec6476ef7fafc6f423204f059db47f80351791890effceb173e96",
@@ -50,7 +50,7 @@
     },
     "F05_B06": {
       "completion_sha256": "92fd2e6ea62c01079450ccf8c99d26dc895632dc187c35cb12c49195fb38745d",
-      "path": "inputs/cw1_f05/F05_B06/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B06/FIT.json",
       "selected_endpoint": 7,
       "selected_qualified": true,
       "sha256": "e40cfb13f8a0014c48408269d213e256db43a297733144571c63c8ff938fc639",
@@ -58,7 +58,7 @@
     },
     "F05_B07": {
       "completion_sha256": "ae8b5172ca2b847e835c2c778cc340d7d414fd4e7ba642f9d3a6a52b6a8826b4",
-      "path": "inputs/cw1_f05/F05_B07/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B07/FIT.json",
       "selected_endpoint": 3,
       "selected_qualified": true,
       "sha256": "81fb17e0abb4848f2e21898fb0675c247adf358d540519b588471048191e6ef1",
@@ -66,7 +66,7 @@
     },
     "F05_B08": {
       "completion_sha256": "0f65d3188fb58fefd3fb123679adacb732421c58b41de3aa47e349772acc358e",
-      "path": "inputs/cw1_f05/F05_B08/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B08/FIT.json",
       "selected_endpoint": 7,
       "selected_qualified": true,
       "sha256": "1c893d669e769e06879832fa57d486e4bf3879bd6c0b2434aabdceddbc3dab84",
@@ -74,7 +74,7 @@
     },
     "F05_B09": {
       "completion_sha256": "b24d424d86b1c0b01b8ddf46b8933922a137164ac2e54254bf5a49f455f1fbfc",
-      "path": "inputs/cw1_f05/F05_B09/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B09/FIT.json",
       "selected_endpoint": 9,
       "selected_qualified": true,
       "sha256": "4a26e9a5c1612b53997d2652d673b965f3c20b944be6efdd227aff7869f08f31",
@@ -82,7 +82,7 @@
     },
     "F05_B10": {
       "completion_sha256": "6c8a79c7de9b0e3156664453c2be3c7b73dc15f0bb987e52aaf760ab3e1230a3",
-      "path": "inputs/cw1_f05/F05_B10/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B10/FIT.json",
       "selected_endpoint": 7,
       "selected_qualified": true,
       "sha256": "eca40785b389cca8a247602e77bbc9cdb24b4982e5cd664edcf24d9c19400bc6",
@@ -90,7 +90,7 @@
     },
     "F05_B11": {
       "completion_sha256": "840a6c098854523030fe10e607b975d9e41d3eea260619931cc06a368d6285de",
-      "path": "inputs/cw1_f05/F05_B11/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B11/FIT.json",
       "selected_endpoint": 1,
       "selected_qualified": true,
       "sha256": "560f25b96ed583f1d2b0482b81dc77f0574f62ef928ddca289b7ba08b8a933b2",
@@ -98,7 +98,7 @@
     },
     "F05_B12": {
       "completion_sha256": "9dcc08f4be1a078c5b5d2e20fd6f883e50db654e94835f25d5ed822f6875479b",
-      "path": "inputs/cw1_f05/F05_B12/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B12/FIT.json",
       "selected_endpoint": 5,
       "selected_qualified": true,
       "sha256": "462becff0d2393ba1585301b1a1ffabc332ba1a9d502d0b22d0365174a0fe926",
@@ -106,7 +106,7 @@
     },
     "F05_B13": {
       "completion_sha256": "2e8412f833461ea8102eaded6d2fccc3853dabda3289f82220f6ab0f984521bd",
-      "path": "inputs/cw1_f05/F05_B13/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B13/FIT.json",
       "selected_endpoint": 1,
       "selected_qualified": true,
       "sha256": "64fdc0bc77cc7b34117a9bdb6d90303c6b9a3574bc216a4ea4305eeb711be42f",
@@ -114,7 +114,7 @@
     },
     "F05_B14": {
       "completion_sha256": "903b57a9c21f03392d70503699b8c25ec9ee95da6b500d3e5774ea93c85f2ea9",
-      "path": "inputs/cw1_f05/F05_B14/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B14/FIT.json",
       "selected_endpoint": 3,
       "selected_qualified": true,
       "sha256": "8365a74e4d96d6663e21a28f889b4a3604ed538002ee0012ee926fcd1b20302c",
@@ -122,7 +122,7 @@
     },
     "F05_B15": {
       "completion_sha256": "17751f2a7a910678e3cc31c8251f69b4f85ff45adb29240f20c079999c21f05e",
-      "path": "inputs/cw1_f05/F05_B15/FIT.json",
+      "path": "inputs/half_shared_clock_fits/F05_B15/FIT.json",
       "selected_endpoint": 1,
       "selected_qualified": true,
       "sha256": "55c6c3b7a1f162c4c92efd25de9e2f0f14e24213340989b3b0dcfacb19f6e724",

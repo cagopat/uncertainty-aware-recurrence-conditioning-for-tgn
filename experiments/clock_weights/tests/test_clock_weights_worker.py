@@ -9,7 +9,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-import cw1_worker as w
+import clock_weights_worker as w
 
 
 def spec_fixture():
@@ -77,7 +77,7 @@ class WorkerContracts(unittest.TestCase):
         self.assertFalse(jsons[-1][1]['completion_authorized'])
 
     def test_static_training_budget_resume_and_no_top_level_science(self):
-        text = (ROOT/'cw1_worker.py').read_text()
+        text = (ROOT/'clock_weights_worker.py').read_text()
         tree = ast.parse(text)
         for node in tree.body:
             if isinstance(node, ast.Import):

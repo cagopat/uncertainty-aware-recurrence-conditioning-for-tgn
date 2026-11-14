@@ -26,6 +26,21 @@ renderer = load("table_renderer_fixture", "render_tables.py")
 
 
 class RunnerContracts(unittest.TestCase):
+    def test_descriptive_commands_match_compatibility_aliases(self):
+        for canonical, alias, expected in (
+                ("clock-weights", "fresh", "Clock-weight comparison"),
+                ("weight-reassignment", "shuffle", "Support-preserving weight reassignment")):
+            results = []
+            for name in (canonical, alias):
+                with contextlib.redirect_stdout(io.StringIO()) as captured, \
+                     patch.object(runner, "prepare_run", side_effect=AssertionError("No run preparation")), \
+                     patch.object(runner.importlib, "import_module", side_effect=AssertionError("No scientific imports")):
+                    runner.main([name, "plan"])
+                    results.append(json.loads(captured.getvalue()))
+            self.assertEqual(results[0], results[1])
+            self.assertEqual(results[0]["study"], canonical)
+            self.assertEqual(results[0]["study_name"], expected)
+
     def test_plan_and_status_do_not_import_science_or_create_output(self):
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / "not-created"
@@ -47,8 +62,8 @@ class RunnerContracts(unittest.TestCase):
                         runner.main([study, phase])
 
     def test_full_workloads_not_silently_reduced(self):
-        fresh = json.loads((ROOT / "configs/cw1.json").read_text())
-        shuffle = json.loads((ROOT / "configs/sw1.json").read_text())
+        fresh = json.loads((ROOT / "configs/clock_weights.json").read_text())
+        shuffle = json.loads((ROOT / "configs/weight_reassignment.json").read_text())
         self.assertEqual(len(runner.units("fresh", "calibrate", fresh)), 48)
         self.assertEqual(len(runner.units("fresh", "train", fresh)), 192)
         self.assertEqual(len(runner.units("shuffle", "train", shuffle)), 48)

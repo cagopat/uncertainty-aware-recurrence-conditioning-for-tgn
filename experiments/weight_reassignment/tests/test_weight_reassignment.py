@@ -1,4 +1,4 @@
-"""Handwritten-array tests only. No study generator, fitting or model runs."""
+"""Handwritten-array tests for weight reassignment; no fitting or model runs."""
 from __future__ import annotations
 
 import copy
@@ -16,9 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import sw1_data as data
-import sw1_encoding as encoding
-from sw1_worker import evaluation_group_barrier
+import weight_reassignment_data as data
+import weight_reassignment_encoding as encoding
+from weight_reassignment_worker import evaluation_group_barrier
 
 
 class ReassignmentTests(unittest.TestCase):

@@ -9,9 +9,9 @@ from unittest.mock import patch
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from cw1_data import (ARMS,block_number,split_fit,stream_seed,model_seed,
+from clock_weights_data import (ARMS,block_number,split_fit,stream_seed,model_seed,
     labels_for_clock,recording_transform,budget,selected_fit,true_theta,validate_spec)
-from cw1_io import write_json
+from clock_weights_io import write_json
 
 
 class DataTests(unittest.TestCase):
@@ -60,7 +60,7 @@ class DataTests(unittest.TestCase):
             np.testing.assert_array_equal(result,theta)
 
     def test_no_fitting_on_import_and_unlabeled_fit_interface(self):
-        tree=ast.parse((ROOT/'cw1_data.py').read_text())
+        tree=ast.parse((ROOT/'clock_weights_data.py').read_text())
         calibration=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='calibration')
         calls=[n for n in ast.walk(calibration) if isinstance(n,ast.Call) and isinstance(n.func,ast.Name) and n.func.id=='fit_counts']
         self.assertEqual(len(calls),1)

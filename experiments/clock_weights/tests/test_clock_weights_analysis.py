@@ -5,9 +5,9 @@ import unittest
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
-from cw1_analysis import (posterior_disagreement,disagreement_strata,metrics,auc,
+from clock_weights_analysis import (posterior_disagreement,disagreement_strata,metrics,auc,
     grouped_metrics,contrast_definitions,block_summary,aggregate,METHODS)
-from cw1_data import labels_for_clock
+from clock_weights_data import labels_for_clock
 
 
 def handmade():
@@ -61,7 +61,7 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(sum(r['rows'] for r in block['disagreement']['D_strata_h5_h8'].values()),8)
 
     def test_fitted_MAP_error_directions_are_separate(self):
-        from cw1_analysis import strata
+        from clock_weights_analysis import strata
         data,p=handmade()
         p['context_map_period']=np.array([4,2])
         groups=strata(data,p)

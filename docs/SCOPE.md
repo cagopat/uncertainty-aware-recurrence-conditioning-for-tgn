@@ -4,21 +4,38 @@ The release targets two experiments supporting the history-specific clock-weight
 
 | Study | Runnable here | Population and dependency |
 |---|---|---|
-| CW1 fresh calibration | Yes | F00/F05/F10; 16 blocks each; 48 new calibration fits and 192 neural fits |
-| SW1 support-preserving reassignment | Yes | SW05; 16 retained F05 calibration estimates; 48 new neural fits |
-| CW1 retained-calibration R05 | No in this launcher | Requires earlier FC1/EM1 estimates; historical configuration retained for provenance only |
-| EM1 four-arm magnitude comparison | No | Earlier 16 retained FC1 estimates and different encoding arms |
-| RW1 unrestricted reassignment | No | Superseded as the decisive assignment control by SW1; its support-changing limitation must remain disclosed |
+| Clock-weight comparison with fresh calibration | Yes | Neighbor-sharing probabilities 0, .5 and 1; 16 blocks each; 48 new calibration fits and 192 neural fits |
+| Support-preserving weight reassignment | Yes | Half-shared-neighbor condition; 16 retained calibration estimates; 48 new neural fits |
+| Clock-weight comparison with retained calibration | No in this launcher | Requires estimates from earlier fitted-clock and encoding-versus-magnitude studies; historical configuration retained for provenance only |
+| Four-arm encoding-versus-magnitude comparison | No | Earlier 16 retained clock estimates and different encoding arms |
+| Unrestricted weight reassignment | No | Superseded as the decisive assignment control by support-preserving reassignment; its support-changing limitation must remain disclosed |
 | Flight and email comparisons | No | Different real-data sources, candidate populations and evaluation protocols |
-| DC1 dynamic-context comparison | No | Later stochastic-event/state task with all horizons taught; not the deterministic-clock experiment |
+| Dynamic-context comparison | No | Later stochastic-event/state task with all horizons taught; not the deterministic-clock experiment |
 
 The current manuscript's earlier-comparison and real-data appendix rows therefore cannot all be regenerated with this initial repository. Do not describe this release as a complete historical replication package.
 
 ## Original versus regenerated calibration
 
-`inputs/cw1_f05/` contains exactly the sixteen selected F05 fits used by the original SW1 study, with their full endpoint records and hashes. There are no neural weights in these inputs. Original calibration observations and complete execution archives are not bundled.
+`inputs/half_shared_clock_fits/` contains exactly the sixteen selected half-shared-neighbor fits used by the original support-preserving weight-reassignment study, with their full endpoint records and hashes. There are no neural weights in these inputs. Original calibration observations and complete execution archives are not bundled.
 
-The fresh workflow generates calibration histories with the original seed derivation and refits the original bounded objective. Passing that run to the shuffle workflow uses its newly generated F05 records. Different library builds or arithmetic can change fitted numerical endpoints even with the same design and seeds. The wrapper records that lineage instead of claiming the new files carry the original receipts.
+The clock-weight workflow generates calibration histories with the original seed derivation and refits the original bounded objective. Passing that run to the weight-reassignment workflow uses its newly generated half-shared-neighbor records. Different library builds or arithmetic can change fitted numerical endpoints even with the same design and seeds. The wrapper records that lineage instead of claiming the new files carry the original receipts.
+
+## Historical identifier map
+
+The public interface uses descriptive names. Exact original identifiers remain inside archived configurations, fit records, machine-readable unit keys and provenance, so the naming update does not rewrite experimental identities.
+
+| Public name or condition | Historical identifier |
+|---|---|
+| Clock-weight comparison | CW1 |
+| Fresh calibration with neighbor-sharing probability 0, .5 or 1 | F00, F05, F10, respectively |
+| Retained-calibration half-shared-neighbor comparison | R05 |
+| Support-preserving weight reassignment, half-shared neighbor | SW1; condition SW05 |
+| Earlier fitted-clock and partly informative neighbor study | FC1 |
+| Earlier encoding-versus-magnitude comparison | EM1 |
+| Earlier unrestricted weight reassignment | RW1 |
+| Later dynamic-context comparison | DC1 |
+
+For example, `F05_B00__soft_fixed` identifies the fitted-soft arm in block 00 of the fresh-calibration half-shared-neighbor condition. It is a machine-readable unit key, not a separate public study name.
 
 ## No hidden datasets
 

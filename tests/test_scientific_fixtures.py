@@ -34,15 +34,15 @@ def forbidden(*args, **kwargs):
 
 
 BLOCKED_FUNCTIONS = {
-    "cw1_data": {"generate", "calibration", "fitted_inputs"},
-    "sw1_data": {"generate", "fitted_inputs"},
-    "cw1_worker": {"assets", "load_training", "train", "evaluate", "main"},
-    "sw1_worker": {"assets", "load_training", "train", "evaluate", "main"},
-    "cw1_model": {"inherited_module", "make_model", "preflight_fixture"},
-    "sw1_model": {"inherited_module", "make_model", "preflight_fixture"},
-    "cw1_analysis": {"saved_audit", "direct_predictions"},
-    "sw1_analysis": {"direct_predictions"},
-    "fc1_core": {"fit_counts", "predict", "local_sensitivity", "objective", "stationarity", "em_update"},
+    "clock_weights_data": {"generate", "calibration", "fitted_inputs"},
+    "weight_reassignment_data": {"generate", "fitted_inputs"},
+    "clock_weights_worker": {"assets", "load_training", "train", "evaluate", "main"},
+    "weight_reassignment_worker": {"assets", "load_training", "train", "evaluate", "main"},
+    "clock_weights_model": {"inherited_module", "make_model", "preflight_fixture"},
+    "weight_reassignment_model": {"inherited_module", "make_model", "preflight_fixture"},
+    "clock_weights_analysis": {"saved_audit", "direct_predictions"},
+    "weight_reassignment_analysis": {"direct_predictions"},
+    "clock_inference": {"fit_counts", "predict", "local_sensitivity", "objective", "stationarity", "em_update"},
 }
 
 
@@ -80,8 +80,8 @@ def import_file(name, path):
 def load_tests(loader, standard_tests, pattern):
     suite = unittest.TestSuite([standard_tests])
     selections = {
-        "cw1": ["test_cw1_encoding", "test_cw1_analysis", "test_cw1_data", "test_cw1_worker"],
-        "sw1": ["test_sw1_reassignment", "test_sw1_analysis"],
+        "clock_weights": ["test_clock_weights_encoding", "test_clock_weights_analysis", "test_clock_weights_data", "test_clock_weights_worker"],
+        "weight_reassignment": ["test_weight_reassignment", "test_weight_reassignment_analysis"],
     }
     for study, names in selections.items():
         package = ROOT / "experiments" / study

@@ -4,7 +4,7 @@ Project-authored contributions are released under the root [MIT license](LICENSE
 
 ## TGL derived components
 
-The inherited runtimes under [experiments/cw1/inherited](experiments/cw1/inherited) and [experiments/sw1/inherited](experiments/sw1/inherited) contain modified components derived from the [TGL companion repository](https://github.com/dess-mannheim/tgl) for *What Do Temporal Graph Learning Models Learn?* by Abigail J. Hayes, Tobias Schumacher and Markus Strohmaier.
+The inherited runtimes under [the clock-weight comparison](experiments/clock_weights/inherited) and [the weight-reassignment comparison](experiments/weight_reassignment/inherited) contain modified components derived from the [TGL companion repository](https://github.com/dess-mannheim/tgl) for *What Do Temporal Graph Learning Models Learn?* by Abigail J. Hayes, Tobias Schumacher and Markus Strohmaier.
 
 - Retained TGL ancestor: commit `c7b130f93078aa94155856c3d8990a6ac70bc975`.
 - License: MIT, copyright (c) 2025 Data Science in the Economic and Social Sciences.
@@ -12,7 +12,7 @@ The inherited runtimes under [experiments/cw1/inherited](experiments/cw1/inherit
 - Retained notice SHA-256: `3f33c46cd370d850780e1a5c19fcdad60e9eb58b6245bb4993539b18b924a4c8`.
 - Official license reference: [TGL LICENSE](https://github.com/dess-mannheim/tgl/blob/main/LICENSE), inspected on 2026-11-14 and consistent with the retained notice.
 
-The retained ancestor identifies the historical TGL source, not an assertion that every inherited file is unchanged upstream code. The project subsequently added query-feature interventions, evaluation controls and functional state handling. In particular, `inherited/gj1_model.py` implements the project's functional atomic-snapshot adapter; it is not an unmodified released TGN implementation. Files under `inherited/runtime/` include both adapted upstream components and project additions. Source headers and provenance distinguish their roles.
+The retained ancestor identifies the historical TGL source, not an assertion that every inherited file is unchanged upstream code. The project subsequently added query-feature interventions, evaluation controls and functional state handling. In particular, `inherited/tgn_host.py` implements the project's functional atomic-snapshot adapter; it is not an unmodified released TGN implementation. Files under `inherited/runtime/` include both adapted upstream components and project additions. Source headers and provenance distinguish their roles.
 
 ## DyGLib ancestry
 

@@ -8,7 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 import numpy as np
-from cw1_io import canonical_hash, read_json, require, sha, write_json
+from clock_weights_io import canonical_hash, read_json, require, sha, write_json
 
 ARMS = ('hard_fixed', 'equal_fixed', 'soft_fixed', 'period4_fixed')
 CONDITIONS = ('R05', 'F00', 'F05', 'F10')
@@ -52,7 +52,7 @@ def validate_spec(spec):
     require(spec['generator'] == expected, 'Observation generator changed')
     require(spec['disagreement']['bins'] == [0, .01, .05, .25], 'Fixed disagreement bins changed')
     # Verify against the authenticated inherited specification, never executed.
-    original = read_json(Path(__file__).with_name('FC1_SOURCE_PINS.json'))
+    original = read_json(Path(__file__).with_name('CLOCK_FITTING_SOURCE_PINS.json'))
     require(isinstance(original, dict), 'Missing original FC1 source pins')
     optimizer = spec['calibration_fit']
     require(canonical_hash(optimizer) == FC1_OPTIMIZER_SHA256, 'Exact FC1 optimizer/start configuration changed')
@@ -136,7 +136,7 @@ def generate(spec, unit, split, count):
 
 
 def selected_fit(work, unit):
-    from fc1_core import validate_theta
+    from clock_inference import validate_theta
     block = block_number(unit)
     work = Path(work)
     if unit.startswith('R05'):
@@ -157,7 +157,7 @@ def selected_fit(work, unit):
 
 
 def fitted_inputs(own, neighbor, theta):
-    from fc1_core import predict
+    from clock_inference import predict
     prediction = predict(own, neighbor, theta)
     mass = prediction['context_period_masses']
     require(mass.shape == (len(own), 2) and np.isfinite(mass).all() and
@@ -172,11 +172,11 @@ def true_theta(unit):
 
 def calibration(work, output, unit, spec):
     """Scientific fit entry point. Only the x/y histories enter fit_counts."""
-    from fc1_core import fit_counts
+    from clock_inference import fit_counts
     validate_spec(spec)
     require(unit.startswith('F'), 'Retained parameters may not be refitted')
     # Original fitting settings are independently bound to authenticated source.
-    require(spec['calibration_fit'] == read_json(Path(work)/'source/FC1_SPEC.json')['optimizer'],
+    require(spec['calibration_fit'] == read_json(Path(work)/'source/CLOCK_FITTING_SPEC.json')['optimizer'],
             'Fresh calibration settings differ from inherited FC1')
     data = generate(spec, unit, 'calibration', spec['calibration_pairs'])
     output = Path(output)

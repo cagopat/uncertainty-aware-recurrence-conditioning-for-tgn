@@ -7,266 +7,482 @@
     "bytecode caches"
   ],
   "files": {
-    "experiments/cw1/FC1_SOURCE_PINS.json": {
+    "experiments/clock_weights/CLOCK_FITTING_SOURCE_PINS.json": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "FC1_SOURCE_PINS.json",
+      "original_sha256": "96b908ada3a6cfaa1b079a264d6827fa685fdb8ddce0943c406151e1a7981792",
       "sha256": "96b908ada3a6cfaa1b079a264d6827fa685fdb8ddce0943c406151e1a7981792"
     },
-    "experiments/cw1/SPEC.json": {
+    "experiments/clock_weights/SPEC.json": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "SPEC.json",
+      "original_sha256": "d07c672d0aa2be4982dac04ea95eb544b2a77d97e4eb330f6078b621e176c914",
       "sha256": "d07c672d0aa2be4982dac04ea95eb544b2a77d97e4eb330f6078b621e176c914"
     },
-    "experiments/cw1/cw1_analysis.py": {
+    "experiments/clock_weights/clock_inference.py": {
       "byte_identical": true,
+      "name_replacements": [],
+      "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
+      "original_relative_path": "fc1_core.py",
+      "original_sha256": "2b21aa0551a2ce049eb5465c19178e89919da20ff60d3b5a3fd269be12d96c26",
+      "sha256": "2b21aa0551a2ce049eb5465c19178e89919da20ff60d3b5a3fd269be12d96c26"
+    },
+    "experiments/clock_weights/clock_weights_analysis.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "clock_weights_data",
+          "old": "cw1_data"
+        },
+        {
+          "new": "clock_weights_io",
+          "old": "cw1_io"
+        },
+        {
+          "new": "clock_weights_source",
+          "old": "cw1_source"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        }
+      ],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_analysis.py",
-      "sha256": "8fd4f9487cb3ee1441e000946b768c353a4d5740b877249c187c2ec6f7858c01"
+      "original_sha256": "8fd4f9487cb3ee1441e000946b768c353a4d5740b877249c187c2ec6f7858c01",
+      "sha256": "a76fd623e60b1b2f06c89cad5c7b566f3603d91bac49ad1c43d3aae4697c8a0e"
     },
-    "experiments/cw1/cw1_data.py": {
-      "byte_identical": true,
+    "experiments/clock_weights/clock_weights_data.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "clock_weights_io",
+          "old": "cw1_io"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        },
+        {
+          "new": "CLOCK_FITTING_SOURCE_PINS.json",
+          "old": "FC1_SOURCE_PINS.json"
+        },
+        {
+          "new": "CLOCK_FITTING_SPEC.json",
+          "old": "FC1_SPEC.json"
+        }
+      ],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_data.py",
-      "sha256": "a620349a6385523bea08a16ee59ca471f1175f1707df5fe537ffb874d8edd891"
+      "original_sha256": "a620349a6385523bea08a16ee59ca471f1175f1707df5fe537ffb874d8edd891",
+      "sha256": "eefd17a279bc33ec38c4bcdc204ac19aad9cbcb94de4eb2fb23fcf13daf40799"
     },
-    "experiments/cw1/cw1_encoding.py": {
+    "experiments/clock_weights/clock_weights_encoding.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_encoding.py",
+      "original_sha256": "0484b746c91f3a9fa5fb64b2b9e7c7c6504e86763cfc8719bba4b3b60293e55d",
       "sha256": "0484b746c91f3a9fa5fb64b2b9e7c7c6504e86763cfc8719bba4b3b60293e55d"
     },
-    "experiments/cw1/cw1_io.py": {
+    "experiments/clock_weights/clock_weights_io.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_io.py",
+      "original_sha256": "faf29583e029dfe61639f6de9937fb1f78478a7346d191e17263ff396b75f331",
       "sha256": "faf29583e029dfe61639f6de9937fb1f78478a7346d191e17263ff396b75f331"
     },
-    "experiments/cw1/cw1_model.py": {
-      "byte_identical": true,
+    "experiments/clock_weights/clock_weights_model.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "clock_weights_encoding",
+          "old": "cw1_encoding"
+        },
+        {
+          "new": "tgn_host",
+          "old": "gj1_model"
+        }
+      ],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_model.py",
-      "sha256": "3f8bc8b475e1faf8fec5a4d3c575cab2d041d21bd6e3c79ab08cf453f31c6df6"
+      "original_sha256": "3f8bc8b475e1faf8fec5a4d3c575cab2d041d21bd6e3c79ab08cf453f31c6df6",
+      "sha256": "5e062abb3c9b4e1772e8e2c259bf8cdef943d8ef6e5ed65c56a7d06b9b7d4959"
     },
-    "experiments/cw1/cw1_worker.py": {
-      "byte_identical": true,
+    "experiments/clock_weights/clock_weights_worker.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "clock_weights_analysis",
+          "old": "cw1_analysis"
+        },
+        {
+          "new": "clock_weights_data",
+          "old": "cw1_data"
+        },
+        {
+          "new": "clock_weights_encoding",
+          "old": "cw1_encoding"
+        },
+        {
+          "new": "clock_weights_io",
+          "old": "cw1_io"
+        },
+        {
+          "new": "clock_weights_model",
+          "old": "cw1_model"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        }
+      ],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "cw1_worker.py",
-      "sha256": "ecc7465d8e589c3e88009b2690981f5f13d8be9eb2338059d3d40df053f0d26a"
+      "original_sha256": "ecc7465d8e589c3e88009b2690981f5f13d8be9eb2338059d3d40df053f0d26a",
+      "sha256": "5fc8d80c7fb83f6aca6327b5b95c49ae8ad59f681bc0026e24030e2ffacc86e6"
     },
-    "experiments/cw1/fc1_core.py": {
+    "experiments/clock_weights/inherited/runtime/data/__init__.py": {
       "byte_identical": true,
-      "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
-      "original_relative_path": "fc1_core.py",
-      "sha256": "2b21aa0551a2ce049eb5465c19178e89919da20ff60d3b5a3fd269be12d96c26"
-    },
-    "experiments/cw1/inherited/gj1_model.py": {
-      "byte_identical": true,
-      "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
-      "original_relative_path": "inherited/gj1_model.py",
-      "sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820"
-    },
-    "experiments/cw1/inherited/runtime/data/__init__.py": {
-      "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/data/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/cw1/inherited/runtime/data/utils.py": {
+    "experiments/clock_weights/inherited/runtime/data/utils.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/data/utils.py",
+      "original_sha256": "4e26ffd5e3b6024e9380479980b95280d3ede8086b8770556065786b7da14c62",
       "sha256": "4e26ffd5e3b6024e9380479980b95280d3ede8086b8770556065786b7da14c62"
     },
-    "experiments/cw1/inherited/runtime/train/__init__.py": {
+    "experiments/clock_weights/inherited/runtime/train/__init__.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/cw1/inherited/runtime/train/audit_evaluation.py": {
+    "experiments/clock_weights/inherited/runtime/train/audit_evaluation.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/audit_evaluation.py",
+      "original_sha256": "6b7eef34823c8fb1be0b14fd94b6832dd74ff9d5c76d1ddb92702ba957e0d2be",
       "sha256": "6b7eef34823c8fb1be0b14fd94b6832dd74ff9d5c76d1ddb92702ba957e0d2be"
     },
-    "experiments/cw1/inherited/runtime/train/models/MemoryModel.py": {
+    "experiments/clock_weights/inherited/runtime/train/models/MemoryModel.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/MemoryModel.py",
+      "original_sha256": "9527b4c0b0b70fe9cc485f564b3ff265eccbb0152e19d544ed3ce9dcde9df18a",
       "sha256": "9527b4c0b0b70fe9cc485f564b3ff265eccbb0152e19d544ed3ce9dcde9df18a"
     },
-    "experiments/cw1/inherited/runtime/train/models/__init__.py": {
+    "experiments/clock_weights/inherited/runtime/train/models/__init__.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/cw1/inherited/runtime/train/models/modules.py": {
+    "experiments/clock_weights/inherited/runtime/train/models/modules.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/modules.py",
+      "original_sha256": "b2b2dafb55c004b544ab7dcde61c400fc5bea6531dd8ee3ae88ace10e6536855",
       "sha256": "b2b2dafb55c004b544ab7dcde61c400fc5bea6531dd8ee3ae88ace10e6536855"
     },
-    "experiments/cw1/inherited/runtime/train/prospective_controls.py": {
+    "experiments/clock_weights/inherited/runtime/train/prospective_controls.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_controls.py",
+      "original_sha256": "74a304682d0746c8968374cb71ce2452488506140761a8e3cf908c906c42025d",
       "sha256": "74a304682d0746c8968374cb71ce2452488506140761a8e3cf908c906c42025d"
     },
-    "experiments/cw1/inherited/runtime/train/prospective_sampler.py": {
+    "experiments/clock_weights/inherited/runtime/train/prospective_sampler.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_sampler.py",
+      "original_sha256": "5262f6eeade28f3987bdd5573498b6be10d5fb97b518b9a1dc5e6023cc0a6612",
       "sha256": "5262f6eeade28f3987bdd5573498b6be10d5fb97b518b9a1dc5e6023cc0a6612"
     },
-    "experiments/cw1/inherited/runtime/train/prospective_snapshot.py": {
+    "experiments/clock_weights/inherited/runtime/train/prospective_snapshot.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_snapshot.py",
+      "original_sha256": "2c574bae8d949402437e551d8d7c735b659b203d21f8e9b9f4ac13d31d33cf32",
       "sha256": "2c574bae8d949402437e551d8d7c735b659b203d21f8e9b9f4ac13d31d33cf32"
     },
-    "experiments/cw1/inherited/runtime/train/samplers.py": {
+    "experiments/clock_weights/inherited/runtime/train/samplers.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/samplers.py",
+      "original_sha256": "39183baa9e72e889b45fb2c5a3d296f53a257e039b55eaa1f05a3f04ef7cbd78",
       "sha256": "39183baa9e72e889b45fb2c5a3d296f53a257e039b55eaa1f05a3f04ef7cbd78"
     },
-    "experiments/cw1/inherited/runtime/train/temporal_controls.py": {
+    "experiments/clock_weights/inherited/runtime/train/temporal_controls.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/temporal_controls.py",
+      "original_sha256": "b0f5dc8e549a0a8d3a649060202aceb56613d849696afb0d9113e7d4668aa7c9",
       "sha256": "b0f5dc8e549a0a8d3a649060202aceb56613d849696afb0d9113e7d4668aa7c9"
     },
-    "experiments/sw1/SPEC.json": {
+    "experiments/clock_weights/inherited/tgn_host.py": {
       "byte_identical": true,
+      "name_replacements": [],
+      "original_package": "CLOCK_WEIGHT_VALUE_NOTEBOOKS",
+      "original_relative_path": "inherited/gj1_model.py",
+      "original_sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820",
+      "sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820"
+    },
+    "experiments/weight_reassignment/SPEC.json": {
+      "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "SPEC.json",
+      "original_sha256": "2e4fd9947fa2a94368a06f6163da44feb5e0bba2af5f05261dd01e61c240805a",
       "sha256": "2e4fd9947fa2a94368a06f6163da44feb5e0bba2af5f05261dd01e61c240805a"
     },
-    "experiments/sw1/fc1_core.py": {
+    "experiments/weight_reassignment/clock_inference.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "fc1_core.py",
+      "original_sha256": "2b21aa0551a2ce049eb5465c19178e89919da20ff60d3b5a3fd269be12d96c26",
       "sha256": "2b21aa0551a2ce049eb5465c19178e89919da20ff60d3b5a3fd269be12d96c26"
     },
-    "experiments/sw1/inherited/gj1_model.py": {
+    "experiments/weight_reassignment/inherited/runtime/data/__init__.py": {
       "byte_identical": true,
-      "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
-      "original_relative_path": "inherited/gj1_model.py",
-      "sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820"
-    },
-    "experiments/sw1/inherited/runtime/data/__init__.py": {
-      "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/data/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/sw1/inherited/runtime/data/utils.py": {
+    "experiments/weight_reassignment/inherited/runtime/data/utils.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/data/utils.py",
+      "original_sha256": "4e26ffd5e3b6024e9380479980b95280d3ede8086b8770556065786b7da14c62",
       "sha256": "4e26ffd5e3b6024e9380479980b95280d3ede8086b8770556065786b7da14c62"
     },
-    "experiments/sw1/inherited/runtime/train/__init__.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/__init__.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/sw1/inherited/runtime/train/audit_evaluation.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/audit_evaluation.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/audit_evaluation.py",
+      "original_sha256": "6b7eef34823c8fb1be0b14fd94b6832dd74ff9d5c76d1ddb92702ba957e0d2be",
       "sha256": "6b7eef34823c8fb1be0b14fd94b6832dd74ff9d5c76d1ddb92702ba957e0d2be"
     },
-    "experiments/sw1/inherited/runtime/train/models/MemoryModel.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/models/MemoryModel.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/MemoryModel.py",
+      "original_sha256": "9527b4c0b0b70fe9cc485f564b3ff265eccbb0152e19d544ed3ce9dcde9df18a",
       "sha256": "9527b4c0b0b70fe9cc485f564b3ff265eccbb0152e19d544ed3ce9dcde9df18a"
     },
-    "experiments/sw1/inherited/runtime/train/models/__init__.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/models/__init__.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/__init__.py",
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "experiments/sw1/inherited/runtime/train/models/modules.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/models/modules.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/models/modules.py",
+      "original_sha256": "b2b2dafb55c004b544ab7dcde61c400fc5bea6531dd8ee3ae88ace10e6536855",
       "sha256": "b2b2dafb55c004b544ab7dcde61c400fc5bea6531dd8ee3ae88ace10e6536855"
     },
-    "experiments/sw1/inherited/runtime/train/prospective_controls.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/prospective_controls.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_controls.py",
+      "original_sha256": "74a304682d0746c8968374cb71ce2452488506140761a8e3cf908c906c42025d",
       "sha256": "74a304682d0746c8968374cb71ce2452488506140761a8e3cf908c906c42025d"
     },
-    "experiments/sw1/inherited/runtime/train/prospective_sampler.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/prospective_sampler.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_sampler.py",
+      "original_sha256": "5262f6eeade28f3987bdd5573498b6be10d5fb97b518b9a1dc5e6023cc0a6612",
       "sha256": "5262f6eeade28f3987bdd5573498b6be10d5fb97b518b9a1dc5e6023cc0a6612"
     },
-    "experiments/sw1/inherited/runtime/train/prospective_snapshot.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/prospective_snapshot.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/prospective_snapshot.py",
+      "original_sha256": "2c574bae8d949402437e551d8d7c735b659b203d21f8e9b9f4ac13d31d33cf32",
       "sha256": "2c574bae8d949402437e551d8d7c735b659b203d21f8e9b9f4ac13d31d33cf32"
     },
-    "experiments/sw1/inherited/runtime/train/samplers.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/samplers.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/samplers.py",
+      "original_sha256": "39183baa9e72e889b45fb2c5a3d296f53a257e039b55eaa1f05a3f04ef7cbd78",
       "sha256": "39183baa9e72e889b45fb2c5a3d296f53a257e039b55eaa1f05a3f04ef7cbd78"
     },
-    "experiments/sw1/inherited/runtime/train/temporal_controls.py": {
+    "experiments/weight_reassignment/inherited/runtime/train/temporal_controls.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "inherited/runtime/train/temporal_controls.py",
+      "original_sha256": "b0f5dc8e549a0a8d3a649060202aceb56613d849696afb0d9113e7d4668aa7c9",
       "sha256": "b0f5dc8e549a0a8d3a649060202aceb56613d849696afb0d9113e7d4668aa7c9"
     },
-    "experiments/sw1/sw1_analysis.py": {
+    "experiments/weight_reassignment/inherited/tgn_host.py": {
       "byte_identical": true,
+      "name_replacements": [],
+      "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
+      "original_relative_path": "inherited/gj1_model.py",
+      "original_sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820",
+      "sha256": "842bd08f3bc8b60ab735eb7999673e6bf4afd76278765826c5d93f43637cf820"
+    },
+    "experiments/weight_reassignment/weight_reassignment_analysis.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "weight_reassignment_data",
+          "old": "sw1_data"
+        },
+        {
+          "new": "weight_reassignment_io",
+          "old": "sw1_io"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        }
+      ],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_analysis.py",
-      "sha256": "21a456217eeea658e1e3fbee576d9191f69f74d42b0b304dc8a0e8043948d4a4"
+      "original_sha256": "21a456217eeea658e1e3fbee576d9191f69f74d42b0b304dc8a0e8043948d4a4",
+      "sha256": "6a7f25574c08575115a150d098607031d0520e5726b0793515c1c6b212dc8d42"
     },
-    "experiments/sw1/sw1_data.py": {
-      "byte_identical": true,
+    "experiments/weight_reassignment/weight_reassignment_data.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "weight_reassignment_encoding",
+          "old": "sw1_encoding"
+        },
+        {
+          "new": "weight_reassignment_io",
+          "old": "sw1_io"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        }
+      ],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_data.py",
-      "sha256": "356bf2f6c7b4bc615057e5777530d24c7e396d023543b6e23c6b4284f0a11cd0"
+      "original_sha256": "356bf2f6c7b4bc615057e5777530d24c7e396d023543b6e23c6b4284f0a11cd0",
+      "sha256": "4e476a8233055801c8b055e0eaf117798d7aac504f175409ace104b3cac835fd"
     },
-    "experiments/sw1/sw1_encoding.py": {
+    "experiments/weight_reassignment/weight_reassignment_encoding.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_encoding.py",
+      "original_sha256": "394ab25fc681294eb24a4876bfcb975746a16be1ae1e48dc8c0049a3699b26ad",
       "sha256": "394ab25fc681294eb24a4876bfcb975746a16be1ae1e48dc8c0049a3699b26ad"
     },
-    "experiments/sw1/sw1_io.py": {
+    "experiments/weight_reassignment/weight_reassignment_io.py": {
       "byte_identical": true,
+      "name_replacements": [],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_io.py",
+      "original_sha256": "b1226e48e62b8eb37f15fadc8ce19d80da2cdcd7e228687a8ee5c8aa3eff522b",
       "sha256": "b1226e48e62b8eb37f15fadc8ce19d80da2cdcd7e228687a8ee5c8aa3eff522b"
     },
-    "experiments/sw1/sw1_model.py": {
-      "byte_identical": true,
+    "experiments/weight_reassignment/weight_reassignment_model.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "weight_reassignment_encoding",
+          "old": "sw1_encoding"
+        },
+        {
+          "new": "tgn_host",
+          "old": "gj1_model"
+        }
+      ],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_model.py",
-      "sha256": "044df66b5343f5b23db080fd2ae8c67050327f19c627a2e7e86846804e601201"
+      "original_sha256": "044df66b5343f5b23db080fd2ae8c67050327f19c627a2e7e86846804e601201",
+      "sha256": "daa9a05569614e7e4cb5667cc85fb3eaad669d8973ee6eb987ec1d144a09b050"
     },
-    "experiments/sw1/sw1_worker.py": {
-      "byte_identical": true,
+    "experiments/weight_reassignment/weight_reassignment_worker.py": {
+      "byte_identical": false,
+      "name_replacements": [
+        {
+          "new": "weight_reassignment_analysis",
+          "old": "sw1_analysis"
+        },
+        {
+          "new": "weight_reassignment_data",
+          "old": "sw1_data"
+        },
+        {
+          "new": "weight_reassignment_encoding",
+          "old": "sw1_encoding"
+        },
+        {
+          "new": "weight_reassignment_io",
+          "old": "sw1_io"
+        },
+        {
+          "new": "weight_reassignment_model",
+          "old": "sw1_model"
+        },
+        {
+          "new": "clock_inference",
+          "old": "fc1_core"
+        }
+      ],
       "original_package": "SUPPORT_PRESERVING_WEIGHT_NOTEBOOKS",
       "original_relative_path": "sw1_worker.py",
-      "sha256": "4557250986c4945b67a30e595d3e65de411dccb23f09f7fd7e326c40325a2b60"
+      "original_sha256": "4557250986c4945b67a30e595d3e65de411dccb23f09f7fd7e326c40325a2b60",
+      "sha256": "2a91ebc5bfd80dbd9dc100c5df7437c7ae67bf0f291eb98a84cf38ed3aa15ded"
     }
   },
+  "modification_policy": "Descriptive file/module names only. Reverse each recorded replacement and verify the original SHA-256. Seed namespaces, specifications, model attribute/checkpoint keys and fitted inputs are unchanged.",
   "new_interface": "scripts/run_experiments.py creates a new reproduction identity, not an original receipt",
-  "schema_version": 1,
-  "scientific_modules_modified": false
+  "schema_version": 2,
+  "scientific_algorithms_modified": false,
+  "scientific_modules_modified": true
 }

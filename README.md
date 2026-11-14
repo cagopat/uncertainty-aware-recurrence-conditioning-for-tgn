@@ -1,10 +1,10 @@
 # Uncertainty-Aware Recurrence Conditioning for TGN
 
-Reproduction code for two core synthetic comparisons: **fresh clock calibration** (CW1) and **support-preserving reassignment of clock weights** (SW1).
+Reproduction code for two core synthetic studies: **Clock-weight comparison** and **Support-preserving weight reassignment**.
 
 The intervention keeps several candidate periods available in TGN's attention-side time representation. Hard selection, equal weights and fitted weights are compared at the same input norm. A direct fitted probability forecast remains a mandatory baseline: improving a TGN representation does **not** establish an advantage over direct forecasting or prove that graph learning is necessary.
 
-This repository contains the generator, population clock fitting, functional TGN host, training, evaluation, exact configurations and table generation. **No Google Drive folder or earlier experiment archive is required.** The sixteen original CW1 F05 calibration fits used by SW1 are bundled; they can also be regenerated.
+This repository contains the generator, population clock fitting, functional TGN host, training, evaluation, exact configurations and table generation. **No Google Drive folder or earlier experiment archive is required.** The sixteen original calibration fits from the half-shared-neighbor condition are bundled for the weight-reassignment study; they can also be regenerated.
 
 ## Setup
 
@@ -24,29 +24,29 @@ The dependency file records the original stack; wheel availability on every plat
 
 Run these commands from the repository root. `plan` is read-only and does not generate data or train models. `--execute` explicitly authorizes computation.
 
-### Fresh calibration and sharing conditions
+### Clock-weight comparison
 
 ```bash
-python scripts/run_experiments.py fresh plan --run-dir runs/fresh
-python scripts/run_experiments.py fresh all --run-dir runs/fresh --execute
+python scripts/run_experiments.py clock-weights plan --run-dir runs/clock-weights
+python scripts/run_experiments.py clock-weights all --run-dir runs/clock-weights --execute
 ```
 
 This fits 48 population clock models, then 192 neural models: 16 blocks × three neighbor-sharing conditions × four arms. It generates held-out test cases only after all 192 neural fits are complete. The four arms are hard, equal, fitted-soft and fixed-period-four phase encoding. All direct probability baselines are evaluated too.
 
-### Support-preserving shuffle with the original sixteen fits
+### Support-preserving weight reassignment
 
 ```bash
-python scripts/run_experiments.py shuffle plan --run-dir runs/shuffle
-python scripts/run_experiments.py shuffle all --run-dir runs/shuffle --execute
+python scripts/run_experiments.py weight-reassignment plan --run-dir runs/weight-reassignment
+python scripts/run_experiments.py weight-reassignment all --run-dir runs/weight-reassignment --execute
 ```
 
-This uses the bundled calibration estimates and trains 48 new neural models: 16 blocks × fitted-soft, equal and support-preserving reassigned weights. It reproduces the original **conditional-on-calibration** comparison without requiring the old CW1 archive.
+This uses the bundled calibration estimates and trains 48 new neural models: 16 blocks × fitted-soft, equal and support-preserving reassigned weights. It reproduces the original **conditional-on-calibration** comparison without requiring an earlier experiment archive.
 
-To use the sixteen F05 fits from your new calibration run instead:
+To use the sixteen half-shared-neighbor fits from your new calibration run instead:
 
 ```bash
-python scripts/run_experiments.py shuffle all --run-dir runs/shuffle-refitted \
-  --calibration-run runs/fresh --execute
+python scripts/run_experiments.py weight-reassignment all --run-dir runs/weight-reassignment-refitted \
+  --calibration-run runs/clock-weights --execute
 ```
 
 This is a new end-to-end rerun of the procedure, not byte-identical recovery of the original fitted records. Use a different output directory; the launcher binds the chosen inputs into the run identity.
@@ -54,9 +54,9 @@ This is a new end-to-end rerun of the procedure, not byte-identical recovery of 
 ### Status and tables
 
 ```bash
-python scripts/run_experiments.py fresh status --run-dir runs/fresh
-python scripts/run_experiments.py fresh tables --run-dir runs/fresh --execute
-python scripts/run_experiments.py shuffle tables --run-dir runs/shuffle --execute
+python scripts/run_experiments.py clock-weights status --run-dir runs/clock-weights
+python scripts/run_experiments.py clock-weights tables --run-dir runs/clock-weights --execute
+python scripts/run_experiments.py weight-reassignment tables --run-dir runs/weight-reassignment --execute
 ```
 
 The `all` workflow includes table generation. Tables retain every arm and direct baseline, per-horizon and paired-block comparisons, and unfavorable results. `tables` uses saved evaluation arrays; it does not refit or retrain models. See [execution details](docs/REPRODUCIBILITY.md) for stage-by-stage use, verification and recovery.
@@ -65,24 +65,24 @@ The `all` workflow includes table generation. Tables retain every arm and direct
 
 | Path | Contents |
 |---|---|
-| `experiments/cw1/`, `experiments/sw1/` | Unchanged scientific modules and modified TGL/DyGLib-derived functional host |
+| `experiments/clock_weights/`, `experiments/weight_reassignment/` | Scientific modules and modified TGL/DyGLib-derived functional host, with descriptive module names |
 | `configs/` | Exact original scientific specifications, seeds and budgets |
-| `inputs/cw1_f05/` | Sixteen authenticated original calibration fit records, selection mapping and provenance |
-| `inputs/FC1_SPEC.json` | Original clock-fitting configuration required by fresh calibration |
+| `inputs/half_shared_clock_fits/` | Sixteen authenticated original calibration fit records, selection mapping and provenance |
+| `inputs/clock_fitting_spec.json` | Original clock-fitting configuration required by fresh calibration |
 | `scripts/` | Portable execution, verification and table commands; no Drive dependency |
 | `tests/` | Handwritten technical fixtures, not scientific experiment runs |
 | `docs/` | Protocol, scope and reproducibility boundaries |
-| `SOURCE_PROVENANCE.json`, `FILE_MANIFEST.json` | Original source hashes and public-package integrity |
+| `SOURCE_PROVENANCE.json`, `FILE_MANIFEST.json` | Original source hashes, naming-only changes and public-package integrity |
 
 Only required synthetic fitted inputs are bundled. Neural checkpoints, raw prediction arrays and historical audit archives are not included; the workflow produces new ones. The repository is small enough for ordinary Git and does not need Git LFS for its initial contents.
 
 ## Scope and interpretation
 
-This initial release covers the main fresh-calibration and support-preserving shuffle comparisons, **not every experiment in the project's history or every manuscript appendix table**. Earlier matched-magnitude comparisons (EM1), retained-calibration CW1 R05, flight/email studies, and the later dynamic-context DC1 study are outside this runnable release. See [scope](docs/SCOPE.md).
+This initial release covers the clock-weight comparison with fresh calibration and the support-preserving weight-reassignment comparison, **not every experiment in the project's history or every manuscript appendix table**. Earlier matched-magnitude and retained-calibration comparisons, flight/email studies, and the later dynamic-context study are outside this runnable release. See [scope](docs/SCOPE.md).
 
 Training covers h1–h4 and evaluation covers h1–h8. With periods 2 and 4 and the raw horizon input neutralized, h and h+4 phase representations repeat by construction. Longer-horizon accuracy here is not evidence that TGN independently discovered a recurrence law. All motifs share the same three-node topology.
 
-The public wrapper has software tests, but no new scientific experiment is run during repository preparation. It reuses the original scientific source unchanged. Original experiments and their saved-output audits are distinct from an independently completed run of this new portable wrapper.
+The public wrapper has software tests, but no new scientific experiment is run during repository preparation. The scientific algorithms are preserved; module names and import references use descriptive names. Original experiments and their saved-output audits are distinct from an independently completed run of this new portable wrapper.
 
 ## License and attribution
 
