@@ -4,7 +4,7 @@ Reproduction code for two core synthetic studies: **Clock-weight comparison** an
 
 The intervention keeps several candidate periods available in TGN's attention-side time representation. Hard selection, equal weights and fitted weights are compared at the same input norm. A direct fitted probability forecast remains a mandatory baseline: improving a TGN representation does **not** establish an advantage over direct forecasting or prove that graph learning is necessary.
 
-This repository contains the generator, population clock fitting, functional TGN host, training, evaluation, exact configurations and table generation. **No Google Drive folder or earlier experiment archive is required.** The sixteen original calibration fits from the half-shared-neighbor condition are bundled for the weight-reassignment study; they can also be regenerated.
+This repository contains the generator, population clock fitting, functional TGN host, training, evaluation, exact configurations and table generation. The sixteen original calibration fits from the half-shared-neighbor condition are bundled for the weight-reassignment study; they can also be regenerated.
 
 ## Setup
 
