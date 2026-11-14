@@ -27,6 +27,8 @@ class MarkdownFormatting(unittest.TestCase):
     def test_protocol_equations_and_weight_table_use_math(self):
         text = (ROOT / 'docs/PROTOCOL.md').read_text(encoding='utf-8')
         self.assertGreaterEqual(text.count('```math\n'), 2)
+        # Ordinary Markdown otherwise consumes the escaped literal set braces.
+        self.assertIn(r'$`\rho\in\{0,0.5,1\}`$', text)
         for row in ('| Equal |', '| Fitted soft |', '| Fixed period four |'):
             line = next(value for value in text.splitlines() if value.startswith(row))
             self.assertEqual(line.count('|'), 3, 'Math must not break the two-column table')
